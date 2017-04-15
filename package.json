@@ -3,5 +3,17 @@
   "version": "",
   "description": "",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "ava test",
+    "start": "node-dev ."
+  },
+  "dependencies": {
+    "koa": "^2.2.0"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "node-dev": "^3.1.3",
+    "supertest": "^3.0.0"
+  }
 }
