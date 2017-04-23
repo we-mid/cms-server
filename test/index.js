@@ -1,16 +1,44 @@
 let supertest = require('supertest')
 let { test } = require('ava')
-let app = require('../app')
+let _ = require('lodash')
+let server = require('../')
+let { t2p } = require('../util')
 
-let port = process.env.PORT || 3002
-let server = app.listen(port)
+// todo: we need a DAO to access db directly
+// to remove existed data before test
+
+test(async t => {
+  let docs
+  await testServer(t, s => {
+    return s.get('/api/products/list')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect(res => {
+        docs = res.body.docs
+      })
+  })
+
+  let _ids = _.map(docs, '_id')
+
+  await testServer(t, s => {
+    return s.post('/api/products/delete')
+      .send({ _ids })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      // expect
+  })
+})
 
 test(async t => {
   await testServer(t, s => {
-    return s.get('/')
+    return s.post('/api/products/create')
+      .send({
+        title: 'Title 123',
+        description: 'Description 123'
+      })
       .expect(200)
-      .expect('Content-Type', /^text\/plain/)
-      .expect('Hello')
+      .expect('Content-Type', /json/)
+      .expect({ ret: { n: 1, ok: 1 } })
   })
 })
 
@@ -19,12 +47,4 @@ async function testServer (t, fn) {
     let s = supertest(server)
     fn(s).end(done)
   }))
-}
-
-function t2p (thunk) {
-  return new Promise((resolve, reject) => {
-    thunk((err, ...args) => {
-      err ? reject(err) : resolve(args)
-    })
-  })
 }

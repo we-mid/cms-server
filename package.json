@@ -1,15 +1,20 @@
 {
-  "name": "",
-  "version": "",
-  "description": "",
-  "main": "index.js",
+  "name": "we-admin-server",
+  "version": "0.0.1",
+  "description": "Server-side of we-admin framework.",
+  "main": "src/",
   "license": "MIT",
   "scripts": {
     "test": "ava test",
     "start": "node-dev ."
   },
   "dependencies": {
-    "koa": "^2.2.0"
+    "koa": "^2.2.0",
+    "koa-body": "^2.0.0",
+    "koa-router": "^7.1.1",
+    "lodash": "^4.17.4",
+    "mongodb": "^2.2.25",
+    "require-directory": "^2.1.1"
   },
   "devDependencies": {
     "ava": "^0.19.1",
