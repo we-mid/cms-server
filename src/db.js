@@ -2,7 +2,16 @@ let { MongoClient } = require('mongodb')
 let { dbName } = require('../config')
 let cachedDbs = {}
 
-exports.getDb = getDb
+exports.getColl = getColl
+
+async function getColl (key) {
+  if (!key) {
+    throw new Error(`resource key is required, got "${key}"`)
+  }
+  let db = await getDb()
+  let coll = await db.collection(key)
+  return coll
+}
 
 function getDb () {
   return getDbByName(dbName)

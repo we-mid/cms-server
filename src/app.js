@@ -1,36 +1,31 @@
 let Koa = require('koa')
 let KoaBody = require('koa-body')
 let Router = require('koa-router')
+let _ = require('lodash')
+let { getColl } = require('./db')
+let { PRODUCTS } = require('./const')
 
 let app = new Koa()
 let koaBody = KoaBody()
 let apiRouter = new Router({ prefix: '/api' })
 
-let { getDb } = require('./db')
-
-let collNameProducts = 'products'
-
 apiRouter.use(koaBody)
 
-apiRouter.post('/products/create', async ctx => {
-  let db = await getDb()
-  let coll = await db.collection('products')
-
+apiRouter.post(`/${PRODUCTS}/create`, async ctx => {
   let { title, description } = ctx.request.body
   let doc = { title, description }
+  let coll = await getColl(PRODUCTS)
   let ret = await coll.insertOne(doc)
   ctx.body = { ret }
 })
 
-apiRouter.post('/products/update', async ctx => {
-  let db = await getDb()
-  let coll = await db.collection('products')
-
+apiRouter.post(`/${PRODUCTS}/update`, async ctx => {
   let { _id, _ids } = ctx.request.body
   let { title, description } = ctx.request.body
   let update = { $set: { title, description } }
+  let coll = await getColl(PRODUCTS)
   let ret
-
+  
   if (_id) {
     let filter = { _id }
     ret = await coll.updateOne(filter, update)
@@ -43,10 +38,9 @@ apiRouter.post('/products/update', async ctx => {
   ctx.body = { ret }
 })
 
-apiRouter.post('/products/delete', async ctx => {
-  let db = await getDb()
-  let coll = await db.collection('products')
+apiRouter.post(`/${PRODUCTS}/delete`, async ctx => {
   let { _id, _ids } = ctx.request.body
+  let coll = await getColl(PRODUCTS)
   let ret
 
   if (_id) {
@@ -61,20 +55,46 @@ apiRouter.post('/products/delete', async ctx => {
   ctx.body = { ret }
 })
 
-apiRouter.get('/products/list', async ctx => {
-  let db = await getDb()
-  let coll = await db.collection('products')
+// dont forget to `parseInt` the number params
+apiRouter.get(`/${PRODUCTS}/list`, async (ctx, next) => {
+  let filter = {} // todo
+  ctx.state.listFilter = filter
+  await next()
+})
 
-  let { page, limit } = ctx.query
-  page = parseInt(page) || 1
-  limit = parseInt(limit) || 20
-  let filter = {}
-  let options = {
-    limit,
-    offset: limit * (page - 1)
+// middleware: /list validation
+apiRouter.get('/:resource/list', async (ctx, next) => {
+  let { resource } = ctx.params
+  let { listFilter } = ctx.state
+  if (!listFilter) {
+    throw new Error(`missing listFilter, resource key got "${resource}"`)
   }
-  
-  let docs = await coll.find(filter, options).toArray()
+  await next()
+})
+
+// middleware: /list default pagination logic
+apiRouter.get('/:resource/list', async (ctx, next) => {
+  let { listOptions } = ctx.state
+  let { page, skip, limit } = ctx.query
+  limit = parseInt(limit) || 10
+  if ('skip' in ctx.query) {
+    skip = parseInt(skip) || 0
+  } else {
+    page = parseInt(page) || 1
+    skip = limit * (page - 1)
+  }
+  listOptions = listOptions || {}
+  listOptions = _.defaults(listOptions, { skip, limit })
+  ctx.state = listOptions
+  await next()
+})
+
+// middleware: /list db.find()
+apiRouter.get('/:resource/list', async ctx => {
+  let { resource } = ctx.params
+  let { listFilter, listOptions } = ctx.state
+  let coll = await getColl(resource)
+  let docs = await coll.find(listFilter, listOptions).toArray()
   ctx.body = { docs }
 })
 
