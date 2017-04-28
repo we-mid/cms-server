@@ -1,5 +1,5 @@
 let { MongoClient } = require('mongodb')
-let { dbName } = require('../config')
+let { dbName, mongoPort } = require('../config')
 let cachedDbs = {}
 
 exports.getColl = getColl
@@ -21,7 +21,7 @@ function getDb () {
 async function getDbByName (dbName) {
   let db = cachedDbs[dbName]
   if (db) return db
-  let url = `mongodb://localhost:27017/${dbName}`
+  let url = `mongodb://localhost:${mongoPort}/${dbName}`
   db = await MongoClient.connect(url)
   cachedDbs[dbName] = db
   return db
