@@ -1,9 +1,9 @@
 let KoaBody = require('koa-body')
 let Router = require('koa-router')
 let _ = require('lodash')
-let { getColl } = require('./db')
-let { PRODUCTS } = require('./const')
-let { env } = require('../config')
+let { getColl } = require('../db')
+let { PRODUCTS } = require('../const')
+let { env } = require('../../config')
 
 exports.registerApi = registerApi
 
@@ -26,55 +26,9 @@ apiRouter.use(async (ctx, next) => {
   }
 })
 
-apiRouter.post(`/${PRODUCTS}/create`, async ctx => {
-  let { title, description } = ctx.request.body
-  let doc = { title, description }
-  let coll = await getColl(PRODUCTS)
-  let ret = await coll.insertOne(doc)
-  ctx.body = { ret }
-})
-
-apiRouter.post(`/${PRODUCTS}/update`, async ctx => {
-  let { _id, _ids } = ctx.request.body
-  let { title, description } = ctx.request.body
-  let update = { $set: { title, description } }
-  let coll = await getColl(PRODUCTS)
-  let ret
-  
-  if (_id) {
-    let filter = { _id }
-    ret = await coll.updateOne(filter, update)
-  } else if (_ids) {
-    let filter = { _id: { $in: _ids } }
-    ret = await coll.updateMany(filter, update)
-  } else {
-    throw new Error('either of _id or _ids is required')
-  }
-  ctx.body = { ret }
-})
-
-apiRouter.post(`/${PRODUCTS}/delete`, async ctx => {
-  let { _id, _ids } = ctx.request.body
-  let coll = await getColl(PRODUCTS)
-  let ret
-
-  if (_id) {
-    let filter = { _id }
-    ret = await coll.deleteOne(filter)
-  } else if (_ids) {
-    let filter = { _id: { $in: _ids } }
-    ret = await coll.deleteMany(filter)
-  } else {
-    throw new Error('either of _id or _ids is required')
-  }
-  ctx.body = { ret }
-})
-
-// dont forget to `parseInt` the number params
-apiRouter.get(`/${PRODUCTS}/list`, async (ctx, next) => {
-  let filter = {} // todo
-  ctx.state.listFilter = filter
-  await next()
+;[PRODUCTS].forEach(resource => {
+  let { registerResource } = require(`./${resource}`)
+  registerResource(apiRouter)
 })
 
 // middleware: /list validation
@@ -109,8 +63,11 @@ apiRouter.get('/:resource/list', async ctx => {
   let { resource } = ctx.params
   let { listFilter, listOptions } = ctx.state
   let coll = await getColl(resource)
-  let docs = await coll.find(listFilter, listOptions).toArray()
-  ctx.body = { docs }
+  let [total, docs] = await Promise.all([
+    coll.count(listFilter),
+    coll.find(listFilter, listOptions).toArray()
+  ])
+  ctx.body = { total, docs }
 })
 
 function registerApi (app) {
