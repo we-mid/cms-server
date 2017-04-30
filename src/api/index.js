@@ -10,9 +10,33 @@ exports.registerApi = registerApi
 let apiRouter = new Router({ prefix: '/api' })
 apiRouter.use(KoaBody())
 
+apiRouter.use(async (ctx, next) => {
+  let { body } = ctx.request
+  if (body && _.isString(body)) {
+    try {
+      ctx.request.body = JSON.parse(body)
+    } catch (err) {
+      throw new Error(`invalid json body, got: ${body}`)
+    }
+  }
+  await next()
+})
+
+// api cors
+apiRouter.use(async (ctx, next) => {
+  console.log('api cors')
+  if (ctx.method === 'OPTIONS') {
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    ctx.status = 204
+  }
+  ctx.set('Access-Control-Allow-Origin', '*')
+  await next()
+})
+
 // api error-handling
 // https://github.com/koajs/koa/blob/master/docs/error-handling.md
 apiRouter.use(async (ctx, next) => {
+  console.log('api error handleing')
   try {
     await next()
   } catch (err) {
@@ -44,7 +68,7 @@ apiRouter.get('/:resource/list', async (ctx, next) => {
 // middleware: /list default pagination logic
 apiRouter.get('/:resource/list', async (ctx, next) => {
   let { listOptions } = ctx.state
-  let { page, skip, limit } = ctx.query
+  let { page, skip, limit, sort } = ctx.query
   limit = parseInt(limit) || 10
   if ('skip' in ctx.query) {
     skip = parseInt(skip) || 0
@@ -52,9 +76,12 @@ apiRouter.get('/:resource/list', async (ctx, next) => {
     page = parseInt(page) || 1
     skip = limit * (page - 1)
   }
+  if (sort) {
+    sort = { createdAt: +sort }
+  }
   listOptions = listOptions || {}
-  listOptions = _.defaults(listOptions, { skip, limit })
-  ctx.state = listOptions
+  listOptions = _.defaults(listOptions, { skip, limit, sort })
+  ctx.state.listOptions = listOptions
   await next()
 })
 
@@ -72,5 +99,5 @@ apiRouter.get('/:resource/list', async ctx => {
 
 function registerApi (app) {
   app.use(apiRouter.routes())
-  app.use(apiRouter.allowedMethods())
+  // app.use(apiRouter.allowedMethods())
 }

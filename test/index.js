@@ -18,11 +18,11 @@ test(async t => {
       })
   })
 
-  let _ids = _.map(docs, '_id')
+  let uids = _.map(docs, 'uid')
 
   await testServer(t, s => {
     return s.post('/api/products/delete')
-      .send({ _ids })
+      .send({ uids })
       .expect(200)
       .expect('Content-Type', /json/)
       // expect
@@ -33,7 +33,7 @@ test(async t => {
   await testServer(t, s => {
     return s.post('/api/products/create')
       .send({
-        title: 'Title 123',
+        name: 'Name 123',
         description: 'Description 123'
       })
       .expect(200)
