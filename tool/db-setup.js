@@ -1,5 +1,5 @@
 let { getColl, closeDb } = require('../src/db')
-let { CATEGORIES, PROVIDERS } = require('../src/const')
+let { USERS, CATEGORIES, PROVIDERS, PRODUCTS } = require('../src/const')
 
 setup()
 
@@ -9,13 +9,11 @@ async function setup () {
   coll.createIndex({ uid: 1 }, { unique: true })
   coll.createIndex({ name: 1 }, { unique: true })
   let docs = [
-    { type: 'period', uid: 'breakfast', name: '早餐' },
-    { type: 'period', uid: 'lunch', name: '午餐' },
-    { type: 'period', uid: 'supper', name: '晚餐' },
-    { type: 'price', uid: '20y', name: '20元套餐' },
-    { type: 'price', uid: '25y', name: '25元套餐' },
-    { type: 'price', uid: '30y', name: '30元套餐' }
+    { type: 'period', uid: 'bf', name: '早餐' },
+    { type: 'period', uid: 'lc', name: '午餐' },
+    { type: 'period', uid: 'sp', name: '晚餐' }
   ]
+  docs = docs.map(wrapDoc)
   await coll.insertMany(docs)
 
   // setup providers collection
@@ -27,7 +25,40 @@ async function setup () {
     { uid: 'ksf', name: '可颂坊' },
     { uid: 'jyj', name: '吉野家' }
   ]
+  docs = docs.map(wrapDoc)
+  await coll.insertMany(docs)
+
+  // setup products collection
+  coll = await getColl(PRODUCTS)
+  coll.createIndex({ uid: 1 }, { unique: true })
+  coll.createIndex({ name: 1 }, { unique: true })
+  let count = 0
+  docs = [
+    // todo: make `category` an array list
+    { uid: `${++count}`, provider: 'jyj', category: 'lc', name: '特制鸡块饭', price: 25 },
+    { uid: `${++count}`, provider: 'mdw', category: 'bf', name: '小笼包', price: 18 },
+    { uid: `${++count}`, provider: 'ksf', category: 'bf', name: '芝士蛋糕', price: 22 }
+  ]
+  docs = docs.map(wrapDoc)
+  await coll.insertMany(docs)
+
+  // setup users collection
+  coll = await getColl(USERS)
+  coll.createIndex({ uid: 1 }, { unique: true })
+  coll.createIndex({ ad: 1 }, { unique: true })
+  count = 0
+  docs = [
+    { uid: `${++count}`, ad: 'test0008', name: 'test0008' },
+    { uid: `${++count}`, ad: 'nesger.guo', name: '铜仁' },
+    { uid: `${++count}`, ad: 'Leo Lin', name: 'Leo' }
+  ]
+  docs = docs.map(wrapDoc)
   await coll.insertMany(docs)
 
   await closeDb()
+}
+
+function wrapDoc (doc) {
+  let createdAt = Date.now()
+  return Object.assign({ createdAt }, doc)
 }

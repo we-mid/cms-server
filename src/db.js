@@ -1,10 +1,17 @@
 let { MongoClient } = require('mongodb')
 let { dbName, mongoPort } = require('../config')
+let uuid = require('uuid')
 let cachedDbs = {}
 
 exports.getColl = getColl
 exports.closeDb = closeDb
 exports.toFieldsObj = toFieldsObj
+exports.genDocUid = genDocUid
+
+// 8-bits is enough, (10+26)**8 = 2,821,109,907,456
+function genDocUid () {
+  return uuid().substr(0, 8)
+}
 
 function toFieldsObj (keys) {
   let obj = keys.reduce((acc, k) => {

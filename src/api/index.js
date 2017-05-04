@@ -1,8 +1,7 @@
 let KoaBody = require('koa-body')
 let Router = require('koa-router')
 let _ = require('lodash')
-let { getColl } = require('../db')
-let { PRODUCTS } = require('../const')
+let { USERS, PRODUCTS } = require('../const')
 let { env } = require('../../config')
 
 exports.registerApi = registerApi
@@ -24,7 +23,6 @@ apiRouter.use(async (ctx, next) => {
 
 // api cors
 apiRouter.use(async (ctx, next) => {
-  console.log('api cors')
   if (ctx.method === 'OPTIONS') {
     ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     ctx.status = 204
@@ -36,7 +34,6 @@ apiRouter.use(async (ctx, next) => {
 // api error-handling
 // https://github.com/koajs/koa/blob/master/docs/error-handling.md
 apiRouter.use(async (ctx, next) => {
-  console.log('api error handleing')
   try {
     await next()
   } catch (err) {
@@ -50,7 +47,7 @@ apiRouter.use(async (ctx, next) => {
   }
 })
 
-;[PRODUCTS].forEach(resource => {
+;[USERS, PRODUCTS].forEach(resource => {
   let { registerResource } = require(`./${resource}`)
   registerResource(apiRouter)
 })
