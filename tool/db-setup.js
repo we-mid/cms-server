@@ -62,8 +62,8 @@ async function setup () {
   coll.createIndex({ uid: 1 }, { unique: true })
   count = 0
   docs = [
-    { uid: `${++count}`, user: '2', sum: 44, product: { uid: '3', price: 22, amount: 2 } },
-    { uid: `${++count}`, user: '1', sum: 54, product: { uid: '2', price: 18, amount: 3 } }
+    { uid: `${++count}`, product: '3', amount: 2, sum: 44, user: '2', address: '中兴西座 15F' },
+    { uid: `${++count}`, user: '1', product: '2', amount: 3, sum: 54, address: '康佳研发 21F' }
   ]
   docs = docs.map(wrapDoc)
   await coll.insertMany(docs)
