@@ -1,5 +1,7 @@
+let {
+  USERS, ORDERS, CATEGORIES, PROVIDERS, PRODUCTS
+} = require('../src/const')
 let { getColl, closeDb } = require('../src/db')
-let { USERS, CATEGORIES, PROVIDERS, PRODUCTS } = require('../src/const')
 
 unist()
 
@@ -18,6 +20,10 @@ async function unist () {
 
   // unist users collection
   coll = await getColl(USERS)
+  await coll.deleteMany({})
+
+  // unist orders collection
+  coll = await getColl(ORDERS)
   await coll.deleteMany({})
 
   await closeDb()

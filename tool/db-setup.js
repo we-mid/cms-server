@@ -1,5 +1,7 @@
+let {
+  USERS, ORDERS, CATEGORIES, PROVIDERS, PRODUCTS
+} = require('../src/const')
 let { getColl, closeDb } = require('../src/db')
-let { USERS, CATEGORIES, PROVIDERS, PRODUCTS } = require('../src/const')
 
 setup()
 
@@ -51,6 +53,17 @@ async function setup () {
     { uid: `${++count}`, ad: 'test0008', name: 'test0008' },
     { uid: `${++count}`, ad: 'nesger.guo', name: '铜仁' },
     { uid: `${++count}`, ad: 'Leo Lin', name: 'Leo' }
+  ]
+  docs = docs.map(wrapDoc)
+  await coll.insertMany(docs)
+
+  // setup orders collection
+  coll = await getColl(ORDERS)
+  coll.createIndex({ uid: 1 }, { unique: true })
+  count = 0
+  docs = [
+    { uid: `${++count}`, user: '2', sum: 44, product: { uid: '3', price: 22, amount: 2 } },
+    { uid: `${++count}`, user: '1', sum: 54, product: { uid: '2', price: 18, amount: 3 } }
   ]
   docs = docs.map(wrapDoc)
   await coll.insertMany(docs)

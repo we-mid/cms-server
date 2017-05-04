@@ -1,7 +1,7 @@
 let KoaBody = require('koa-body')
 let Router = require('koa-router')
 let _ = require('lodash')
-let { USERS, PRODUCTS } = require('../const')
+let { USERS, ORDERS, PRODUCTS } = require('../const')
 let { env } = require('../../config')
 
 exports.registerApi = registerApi
@@ -47,19 +47,9 @@ apiRouter.use(async (ctx, next) => {
   }
 })
 
-;[USERS, PRODUCTS].forEach(resource => {
+;[USERS, ORDERS, PRODUCTS].forEach(resource => {
   let { registerResource } = require(`./${resource}`)
   registerResource(apiRouter)
-})
-
-// middleware: /list validation
-apiRouter.get('/:resource/list', async (ctx, next) => {
-  let { resource } = ctx.params
-  let { listFilter } = ctx.state
-  if (!listFilter) {
-    throw new Error(`missing listFilter, resource key got "${resource}"`)
-  }
-  await next()
 })
 
 function registerApi (app) {
