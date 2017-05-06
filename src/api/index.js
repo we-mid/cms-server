@@ -47,6 +47,11 @@ apiRouter.use(async (ctx, next) => {
   }
 })
 
+apiRouter.post('/logout', ctx => {
+  ctx.session = null
+  ctx.body = { ok: 1 }
+})
+
 ;[USERS, ORDERS, PRODUCTS].forEach(resource => {
   let { registerResource } = require(`./${resource}`)
   registerResource(apiRouter)

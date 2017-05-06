@@ -8,6 +8,7 @@ let isProduction = process.env.NODE_ENV === 'production'
 // because it is hard to control
 let config = {
   env: 'development',
+  secretKeys: ['some-secret-keys'],
   dbName: 'we-admin-dev',
   mongoPort: 27017,
   port: 3001
