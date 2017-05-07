@@ -1,35 +1,12 @@
-let KoaBody = require('koa-body')
 let Router = require('koa-router')
-let _ = require('lodash')
+let { basename } = require('path')
+let { koaUpload } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
 let { env } = require('../../config')
 
 exports.registerApi = registerApi
 
 let apiRouter = new Router({ prefix: '/api' })
-apiRouter.use(KoaBody())
-
-apiRouter.use(async (ctx, next) => {
-  let { body } = ctx.request
-  if (body && _.isString(body)) {
-    try {
-      ctx.request.body = JSON.parse(body)
-    } catch (err) {
-      throw new Error(`invalid json body, got: ${body}`)
-    }
-  }
-  await next()
-})
-
-// api cors
-apiRouter.use(async (ctx, next) => {
-  if (ctx.method === 'OPTIONS') {
-    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    ctx.status = 204
-  }
-  ctx.set('Access-Control-Allow-Origin', '*')
-  await next()
-})
 
 // api error-handling
 // https://github.com/koajs/koa/blob/master/docs/error-handling.md
@@ -47,9 +24,32 @@ apiRouter.use(async (ctx, next) => {
   }
 })
 
+// api cors
+apiRouter.use(async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Credentials', 'true')
+  ctx.set('Access-Control-Allow-Origin', '*')
+  await next()
+})
+
+// api options method
+apiRouter.options('*', async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  ctx.set('Access-Control-Allow-Origin', '*')
+  ctx.status = 204
+  await next()
+})
+
 apiRouter.post('/logout', ctx => {
   ctx.session = null
   ctx.body = { ok: 1 }
+})
+
+// todo: image specified upload
+apiRouter.post('/upload', koaUpload, ctx => {
+  let { file } = ctx.request.body.files || {}
+  let { path } = file
+  let id = basename(path)
+  ctx.body = { id }
 })
 
 ;[USERS, ORDERS, PRODUCTS].forEach(resource => {

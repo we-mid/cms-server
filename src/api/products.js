@@ -1,12 +1,12 @@
 let { PRODUCTS } = require('../const')
 let { getColl, toFieldsObj, genDocUid } = require('../db')
-let { parsePagination } = require('./util')
+let { koaJson, parsePagination } = require('./util')
 let _ = require('lodash')
 
 exports.registerResource = registerResource
 
 function registerResource (router) {
-  router.post(`/${PRODUCTS}/create`, async ctx => {
+  router.post(`/${PRODUCTS}/create`, koaJson, async ctx => {
     let editFields = ['name', 'description',, 'provider', 'category', 'price']
     let doc = _.pick(ctx.request.body, editFields)
     doc.uid = genDocUid()
@@ -17,7 +17,7 @@ function registerResource (router) {
     ctx.body = { ret }
   })
 
-  router.post(`/${PRODUCTS}/update`, async ctx => {
+  router.post(`/${PRODUCTS}/update`, koaJson, async ctx => {
     let editFields = ['name', 'description', 'provider', 'category', 'price']
     let mutation = _.pick(ctx.request.body, editFields)
     mutation.updatedAt = Date.now()
@@ -39,7 +39,7 @@ function registerResource (router) {
     ctx.body = { ret }
   })
 
-  router.post(`/${PRODUCTS}/delete`, async ctx => {
+  router.post(`/${PRODUCTS}/delete`, koaJson, async ctx => {
     let { uid, uids } = ctx.request.body
     let mutation = { deletedAt: Date.now() }
     let update = { $set: mutation }

@@ -1,11 +1,21 @@
 let Koa = require('koa')
+let KoaMount = require('koa-mount')
+let KoaStatic = require('koa-static')
 let KoaSession = require('koa-session')
 let { registerApi } = require('./api')
-let { secretKeys } = require('../config')
+let { secretKeys, uploadDir } = require('../config')
 
 let app = new Koa()
 
 app.keys = secretKeys
+
+app.use(async (ctx, next) => {
+  let start = Date.now()
+  await next()
+  let end = Date.now()
+  let took = end - start
+  console.log(`${ctx.method} ${ctx.url} - ${took}ms`)
+})
 
 app.use(KoaSession({
   key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
@@ -15,13 +25,7 @@ app.use(KoaSession({
   signed: true /** (boolean) signed or not (default true) */
 }, app))
 
-app.use(async (ctx, next) => {
-  let start = Date.now()
-  await next()
-  let end = Date.now()
-  let took = end - start
-  console.log(`${ctx.method} ${ctx.url} - ${took}ms`)
-})
+app.use(KoaMount('/upload', KoaStatic(uploadDir)))
 
 registerApi(app)
 

@@ -1,3 +1,5 @@
+let { join } = require('path')
+
 // hack: detect whether it is in ava test
 let isTest = process.argv[1] &&
   process.argv[1].includes('node_modules/ava')
@@ -9,6 +11,7 @@ let isProduction = process.env.NODE_ENV === 'production'
 let config = {
   env: 'development',
   secretKeys: ['some-secret-keys'],
+  uploadDir: join(__dirname, './upload'),
   dbName: 'we-admin-dev',
   mongoPort: 27017,
   port: 3001
