@@ -1,6 +1,6 @@
 let Router = require('koa-router')
 let { basename } = require('path')
-let { koaUpload } = require('./util')
+let { koaJson, koaUpload } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
 let { env } = require('../../config')
 
@@ -27,21 +27,49 @@ apiRouter.use(async (ctx, next) => {
 // api cors
 apiRouter.use(async (ctx, next) => {
   ctx.set('Access-Control-Allow-Credentials', 'true')
-  ctx.set('Access-Control-Allow-Origin', '*')
+  ctx.set('Access-Control-Allow-Origin', ctx.get('Origin'))
   await next()
 })
 
 // api options method
 apiRouter.options('*', async (ctx, next) => {
   ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  ctx.set('Access-Control-Allow-Origin', '*')
+  ctx.set('Access-Control-Allow-Origin', ctx.get('Origin'))
   ctx.status = 204
   await next()
+})
+
+apiRouter.post('/login', koaJson, ctx => {
+  let { username, password } = ctx.request.body
+  let matched
+  if (username === 'admin' && password === 'admin') {
+    matched = 'admin'
+  } else if (username === 'provider' && password === 'provider') {
+    matched = 'provider'
+  }
+  if (matched) {
+    ctx.session.username = 'admin'
+    ctx.body = { ok: 1 }
+  } else {
+    ctx.session = null
+    ctx.throw(400, new Error('登录失败'))
+  }
 })
 
 apiRouter.post('/logout', ctx => {
   ctx.session = null
   ctx.body = { ok: 1 }
+})
+
+apiRouter.get('/session', ctx => {
+  let { username } = ctx.session
+  // if (username) {
+  //   ctx.body = { username }
+  // } else {
+  //   ctx.throw(401, new Error('用户未登录，或登录已过期'))
+  // }
+  // 改为直接返回username 不报错 避免网页出现过多 红色错误请求
+  ctx.body = { username }
 })
 
 // todo: image specified upload

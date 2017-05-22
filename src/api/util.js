@@ -22,7 +22,7 @@ async function koaJson (ctx, next) {
       try {
         ctx.request.body = JSON.parse(body)
       } catch (err) {
-        throw new Error(`invalid json body, got: ${body}`)
+        ctx.throw(400, new Error(`invalid json body, got: ${body}`))
       }
     }
     await next()
