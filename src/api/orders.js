@@ -8,7 +8,7 @@ let R = ORDERS
 
 function registerResource (router) {
   // dont forget to `parseInt` the number params
-  router.get(`/${R}/list`, async ctx => {
+  router.get(`/a/${R}/list`, async ctx => {
     let fields = ['uid', 'product', 'amount', 'sum', 'user', 'address', 'createdAt']
     let pagination = parsePagination(ctx)
     let filter = {}
@@ -18,7 +18,7 @@ function registerResource (router) {
         link: USERS,
         show: ['uid', 'ad']
       },
-      'product.uid': {
+      product: {
         link: PRODUCTS,
         show: ['uid', 'name']
       }

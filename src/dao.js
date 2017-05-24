@@ -9,8 +9,17 @@ exports.createBy = createBy
 exports.deleteBy = deleteBy
 exports.updateBy = updateBy
 exports.listBy = listBy
+exports.findBy = findBy
 
 let defaultFilter = { deletedAt: null }
+
+async function findBy (resource, { filter, fields, relation, pagination }) {
+  pagination = pagination || {}
+  pagination.limit = 1
+  let { docs, refs } = await listBy(resource, { filter, fields, relation, pagination })
+  let doc = docs[0] || null
+  return { doc, refs }
+}
 
 async function listBy (resource, { filter, fields, relation, pagination }) {
   fields = toFieldsObj(fields)

@@ -49,10 +49,13 @@ async function setup () {
   coll.createIndex({ uid: 1 }, { unique: true })
   coll.createIndex({ ad: 1 }, { unique: true })
   count = 0
+  // roles 1:user 5:admin 8:provider
   docs = [
-    { uid: `${++count}`, ad: 'test0008', name: 'test0008' },
-    { uid: `${++count}`, ad: 'nesger.guo', name: '铜仁' },
-    { uid: `${++count}`, ad: 'Leo Lin', name: 'Leo' }
+    { uid: `${++count}`, roles: [8], name: 'Provider 01', account: 'provider', password: 'provider' },
+    { uid: `${++count}`, roles: [1, 5], ad: 'admin01', name: 'Admin 01', account: 'admin', password: 'admin' },
+    { uid: `${++count}`, roles: [1], ad: 'test0008', name: 'test0008' },
+    { uid: `${++count}`, roles: [1], ad: 'nesger.guo', name: '铜仁' },
+    { uid: `${++count}`, roles: [1], ad: 'Leo Lin', name: 'Leo' }
   ]
   docs = docs.map(wrapDoc)
   await coll.insertMany(docs)
@@ -63,7 +66,7 @@ async function setup () {
   count = 0
   docs = [
     { uid: `${++count}`, product: '3', amount: 2, sum: 44, user: '2', address: '中兴西座 15F' },
-    { uid: `${++count}`, user: '1', product: '2', amount: 3, sum: 54, address: '康佳研发 21F' }
+    { uid: `${++count}`, product: '2', amount: 3, sum: 54, user: '3', address: '康佳研发 21F' }
   ]
   docs = docs.map(wrapDoc)
   await coll.insertMany(docs)

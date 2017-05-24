@@ -8,14 +8,14 @@ exports.registerResource = registerResource
 let R = PRODUCTS
 
 function registerResource (router) {
-  router.post(`/${R}/create`, koaJson, async ctx => {
+  router.post(`/a/${R}/create`, koaJson, async ctx => {
     let fields = ['name', 'description', 'provider', 'category', 'price']
     let doc = _.pick(ctx.request.body, fields)
     let ret = await createBy(R, doc)
     ctx.body = { ret }
   })
 
-  router.post(`/${R}/update`, koaJson, async ctx => {
+  router.post(`/a/${R}/update`, koaJson, async ctx => {
     let fields = ['name', 'description', 'provider', 'category', 'price']
     let mutation = _.pick(ctx.request.body, fields)
     let { uid, uids } = ctx.request.body
@@ -23,14 +23,14 @@ function registerResource (router) {
     ctx.body = { ret }
   })
 
-  router.post(`/${R}/delete`, koaJson, async ctx => {
+  router.post(`/a/${R}/delete`, koaJson, async ctx => {
     let { uid, uids } = ctx.request.body
     let ret = await deleteBy(R, { uid, uids })
     ctx.body = { ret }
   })
 
   // dont forget to `parseInt` the number params
-  router.get(`/${R}/list`, async ctx => {
+  router.get(`/a/${R}/list`, async ctx => {
     let fields = ['uid', 'name', 'description', 'provider', 'category', 'price', 'createdAt']
     let pagination = parsePagination(ctx)
     let filter = {}

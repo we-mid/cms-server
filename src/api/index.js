@@ -3,6 +3,7 @@ let { basename } = require('path')
 let { koaJson, koaUpload } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
 let { env } = require('../../config')
+let { findBy } = require('../dao')
 
 exports.registerApi = registerApi
 
@@ -39,16 +40,14 @@ apiRouter.options('*', async (ctx, next) => {
   await next()
 })
 
-apiRouter.post('/login', koaJson, ctx => {
-  let { username, password } = ctx.request.body
-  let matched
-  if (username === 'admin' && password === 'admin') {
-    matched = 'admin'
-  } else if (username === 'provider' && password === 'provider') {
-    matched = 'provider'
-  }
+apiRouter.post('/ap/login', koaJson, async ctx => {
+  let { account, password } = ctx.request.body
+  let matched = await findBy(USERS, {
+    filter: { account, password },
+    fields: ['uid', 'name', 'roles']
+  })
   if (matched) {
-    ctx.session.username = 'admin'
+    ctx.session.user = matched
     ctx.body = { ok: 1 }
   } else {
     ctx.session = null
@@ -56,24 +55,19 @@ apiRouter.post('/login', koaJson, ctx => {
   }
 })
 
-apiRouter.post('/logout', ctx => {
+apiRouter.post('/ap/logout', ctx => {
   ctx.session = null
   ctx.body = { ok: 1 }
 })
 
-apiRouter.get('/session', ctx => {
-  let { username } = ctx.session
-  // if (username) {
-  //   ctx.body = { username }
-  // } else {
-  //   ctx.throw(401, new Error('用户未登录，或登录已过期'))
-  // }
-  // 改为直接返回username 不报错 避免网页出现过多 红色错误请求
-  ctx.body = { username }
+apiRouter.get('/ap/session', ctx => {
+  let { user } = ctx.session
+  // 改为直接返回user 不报错 避免网页出现过多 红色错误请求
+  ctx.body = { user }
 })
 
 // todo: image specified upload
-apiRouter.post('/upload', koaUpload, ctx => {
+apiRouter.post('/ap/upload', koaUpload, ctx => {
   let { file } = ctx.request.body.files || {}
   let { path } = file
   let id = basename(path)
