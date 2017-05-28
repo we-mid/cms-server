@@ -2,7 +2,6 @@ let Router = require('koa-router')
 let { basename } = require('path')
 let { koaJson, koaUpload } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
-let { env } = require('../../config')
 let { findBy } = require('../dao')
 
 exports.registerApi = registerApi
@@ -15,12 +14,14 @@ apiRouter.use(async (ctx, next) => {
   try {
     await next()
   } catch (err) {
-    if (env === 'production') {
-      ctx.body = { error: 'Internal Server Error' }
-    } else {
-      ctx.body = { error: err.message }
+    let { code, status, message: error } = err
+    status = status || 500
+    ctx.body = {
+      code,
+      status,
+      error
     }
-    ctx.status = err.status || 500
+    ctx.status = status
     console.error('api error:', err)
   }
 })
@@ -42,16 +43,19 @@ apiRouter.options('*', async (ctx, next) => {
 
 apiRouter.post('/ap/login', koaJson, async ctx => {
   let { account, password } = ctx.request.body
-  let matched = await findBy(USERS, {
+  if (!account) ctx.throw(400, '账号不能为空')
+  if (!password) ctx.throw(400, '密码不能为空')
+
+  let { doc: user } = await findBy(USERS, {
     filter: { account, password },
     fields: ['uid', 'name', 'roles']
   })
-  if (matched) {
-    ctx.session.user = matched
+  if (user) {
+    ctx.session.user = user
     ctx.body = { ok: 1 }
   } else {
     ctx.session = null
-    ctx.throw(400, new Error('登录失败'))
+    ctx.throw(400, '登录失败')
   }
 })
 
@@ -68,7 +72,9 @@ apiRouter.get('/ap/session', ctx => {
 
 // todo: image specified upload
 apiRouter.post('/ap/upload', koaUpload, ctx => {
-  let { file } = ctx.request.body.files || {}
+  let { files } = ctx.request.body
+  let { file } = files || {}
+  if (!file) ctx.throw(400, '上传文件不能为空')
   let { path } = file
   let id = basename(path)
   ctx.body = { id }
