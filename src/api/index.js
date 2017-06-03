@@ -3,6 +3,7 @@ let { basename } = require('path')
 let { koaJson, koaUpload } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
 let { findBy } = require('../dao')
+let logger = require('../logger')
 
 exports.registerApi = registerApi
 
@@ -43,6 +44,7 @@ apiRouter.options('*', async (ctx, next) => {
 
 apiRouter.post('/ap/login', koaJson, async ctx => {
   let { account, password } = ctx.request.body
+  logger.info('用户尝试登录', { account })
   if (!account) ctx.throw(400, '账号不能为空')
   if (!password) ctx.throw(400, '密码不能为空')
 
@@ -53,13 +55,19 @@ apiRouter.post('/ap/login', koaJson, async ctx => {
   if (user) {
     ctx.session.user = user
     ctx.body = { ok: 1 }
+    logger.info('用户登录成功', { account })
   } else {
     ctx.session = null
     ctx.throw(400, '登录失败')
+    logger.info('用户登录失败', { account })
   }
 })
 
 apiRouter.post('/ap/logout', ctx => {
+  let { user } = ctx.session
+  if (user) {
+    logger.info('用户退出登录', { uid: user.uid })
+  }
   ctx.session = null
   ctx.body = { ok: 1 }
 })
