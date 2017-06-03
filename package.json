@@ -26,6 +26,7 @@
     "node-schedule": "^1.2.3",
     "object-access": "^1.2.2",
     "require-directory": "^2.1.1",
+    "schema-validator2": "0.0.2",
     "uuid": "^3.0.1"
   },
   "devDependencies": {

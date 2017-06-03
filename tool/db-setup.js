@@ -1,7 +1,9 @@
 let {
   USERS, ORDERS, CATEGORIES, PROVIDERS, PRODUCTS
 } = require('../src/const')
+let { User } = require('../src/model')
 let { getColl, closeDb } = require('../src/db')
+let mockData = require('../util/mock')
 
 setup()
 
@@ -48,17 +50,8 @@ async function setup () {
   coll = await getColl(USERS)
   coll.createIndex({ uid: 1 }, { unique: true })
   coll.createIndex({ ad: 1 }, { unique: true })
-  count = 0
-  // roles 1:user 5:admin 8:provider
-  docs = [
-    { uid: `${++count}`, roles: [8], name: 'Provider 01', account: 'provider', password: 'provider' },
-    { uid: `${++count}`, roles: [1, 5], ad: 'admin01', name: 'Admin 01', account: 'admin', password: 'admin' },
-    { uid: `${++count}`, roles: [1], ad: 'test0008', name: 'test0008' },
-    { uid: `${++count}`, roles: [1], ad: 'nesger.guo', name: '铜仁' },
-    { uid: `${++count}`, roles: [1], ad: 'Leo Lin', name: 'Leo' }
-  ]
-  docs = docs.map(wrapDoc)
-  await coll.insertMany(docs)
+  coll.createIndex({ createdAt: 1 })
+  await User.insert({ many: true, data: mockData.User })
 
   // setup orders collection
   coll = await getColl(ORDERS)

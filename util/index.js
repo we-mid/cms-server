@@ -18,3 +18,16 @@ function sleep (duration) {
     setTimeout(resolve, duration)
   })
 }
+
+exports.toFieldsObj = toFieldsObj
+function toFieldsObj (arr) {
+  return arr.reduce((acc, v) => {
+    acc[v] = 1
+    return acc
+  }, {})
+}
+
+exports.toFieldsArr = toFieldsArr
+function toFieldsArr (obj) {
+  return Object.keys(obj)
+}
