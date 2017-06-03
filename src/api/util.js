@@ -8,22 +8,39 @@ fs.ensureDirSync(uploadDir)
 const koaBody = KoaBody()
 const koaUpload = KoaBody({
   multipart: true,
+  keepExtensions: true,
   formidable: { uploadDir }
 })
 
+exports.validate = validate
 exports.koaJson = koaJson
 exports.koaUpload = koaUpload
 exports.parsePagination = parsePagination
+
+function validate (fn) {
+  return async (ctx, next) => {
+    try {
+      fn(ctx)
+    } catch (err) {
+      ctx.throw(err.status || 400, err)
+    }
+    await next()
+  }
+}
 
 async function koaJson (ctx, next) {
   const nx = async () => {
     let { body } = ctx.request
     if (body && _.isString(body)) {
       try {
-        ctx.request.body = JSON.parse(body)
+        body = JSON.parse(body)
       } catch (err) {
-        ctx.throw(400, new Error(`invalid json body, got: ${body}`))
+        ctx.throw(400, 'json解析出错')
       }
+      if (!_.isObject(body)) {
+        ctx.throw(400, 'json必须为object类型')
+      }
+      ctx.request.body = body
     }
     await next()
   }
@@ -40,7 +57,9 @@ function parsePagination (ctx) {
     skip = limit * (page - 1)
   }
   if (sort) {
-    sort = { createdAt: +sort }
+    sort = { _id: +sort }
+  } else {
+    sort = { _id: -1 }
   }
   return { skip, limit, sort }
 }

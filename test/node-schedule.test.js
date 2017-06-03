@@ -18,7 +18,7 @@ test.serial('every second', async t => {
   scheduleJob('* * * * * *', callback)
 
   let duration = 1000 * 3
-  await sleepAndTick(duration)
+  await travel(duration)
   t.is(callback.callCount, 3)
 })
 
@@ -29,7 +29,7 @@ test.serial('every minute', async t => {
   scheduleJob('* * * * *', callback)
 
   let duration = 1000 * 60 * 3
-  await sleepAndTick(duration)
+  await travel(duration)
   t.is(callback.callCount, 3)
 })
 
@@ -40,20 +40,17 @@ test.serial('every 15 minutes', async t => {
   scheduleJob('*/15 * * * *', callback)
 
   let duration = 1000 * 60 * 60 * 3
-  await sleepAndTick(duration)
+  await travel(duration)
   t.is(callback.callCount, 12)
 })
 
 // 延时并加速时钟
-function sleepAndTick (duration) {
-  return Promise.all([
+async function travel (duration) {
+  await Promise.all([
     sleep(duration), // 必须先sleep后tick 才能达到目的
     tick(duration)
   ])
 }
-function tick (duration) {
-  return new Promise(resolve => {
-    clock.tick(duration)
-    resolve()
-  })
+async function tick (duration) {
+  clock.tick(duration)
 }

@@ -1,9 +1,9 @@
 let Koa = require('koa')
-let KoaMount = require('koa-mount')
-let KoaHelmet = require('koa-helmet')
-let KoaStatic = require('koa-static')
-let KoaSession = require('koa-session')
-let KoaRateLimit = require('koa-ratelimit')
+let mount = require('koa-mount')
+let helmet = require('koa-helmet')
+let serve = require('koa-static')
+let session = require('koa-session')
+let ratelimit = require('koa-ratelimit')
 let RedisStore = require('koa-redis')
 let Redis = require('ioredis')
 let { registerApi } = require('./api')
@@ -14,9 +14,9 @@ let app = new Koa()
 
 app.keys = secretKeys
 
-app.use(KoaHelmet())
+app.use(helmet())
 
-app.use(KoaRateLimit({
+app.use(ratelimit({
   db: new Redis(),
   duration: 60000, // 1分钟允许最多600次，平均1秒10次
   max: 600,
@@ -37,7 +37,7 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${took}ms`)
 })
 
-app.use(KoaSession({
+app.use(session({
   store: new RedisStore(),
   key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
   maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
@@ -46,7 +46,7 @@ app.use(KoaSession({
   signed: true /** (boolean) signed or not (default true) */
 }, app))
 
-app.use(KoaMount('/upload', KoaStatic(uploadDir)))
+app.use(mount('/upload', serve(uploadDir)))
 
 registerApi(app)
 

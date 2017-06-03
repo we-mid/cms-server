@@ -1,15 +1,8 @@
 let { MongoClient } = require('mongodb')
 let { dbName, mongoPort } = require('../config')
-let cachedDbs = {}
+let cachedDb
 
 exports.getColl = getColl
-exports.closeDb = closeDb
-
-async function closeDb () {
-  let db = await getDb()
-  await db.close()
-}
-
 async function getColl (key) {
   if (!key) {
     throw new Error(`resource key is required, got "${key}"`)
@@ -19,16 +12,18 @@ async function getColl (key) {
   return coll
 }
 
-function getDb () {
-  return getDbByName(dbName)
+exports.closeDb = closeDb
+async function closeDb () {
+  let db = await getDb()
+  await db.close()
 }
 
 // todo: db connection pool
-async function getDbByName (dbName) {
-  let db = cachedDbs[dbName]
+async function getDb () {
+  let db = cachedDb
   if (db) return db
   let url = `mongodb://localhost:${mongoPort}/${dbName}`
   db = await MongoClient.connect(url)
-  cachedDbs[dbName] = db
+  cachedDb = db
   return db
 }
