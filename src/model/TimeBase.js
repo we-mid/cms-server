@@ -7,27 +7,39 @@ let C = class TimeBase extends B {
     let createdAt = new Date()
     if (many) {
       data = data.map(d => {
-        return _.defaults(d, { createdAt })
+        return _.defaults({}, d, { createdAt })
       })
     } else {
-      data = _.defaults(data, { createdAt })
+      data = _.defaults({}, data, { createdAt })
     }
     return super.insert({ many, data })
   }
 
+  static async find ({ one, filter, fields, sort, skip, limit }) {
+    filter = this._fixFilter(filter)
+    return super.find({ one, filter, fields, sort, skip, limit })
+  }
+
   // 可指定updatedAt
-  static async update ({ many, filter, replace, set, unset }) {
+  static async update ({ many, filter, set }) {
+    filter = this._fixFilter(filter)
     let updatedAt = new Date()
     set = set || {}
-    set = _.defaults(set, { updatedAt })
-    return super.update({ many, filter, replace, set, unset })
+    set = _.defaults({}, set, { updatedAt })
+    return super.update({ many, filter, set })
   }
 
   // 可指定deletedAt
   static async delete ({ many, filter, deletedAt }) {
+    filter = this._fixFilter(filter)
     deletedAt = deletedAt || new Date()
     let set = { deletedAt }
     return this.update({ many, filter, set })
+  }
+
+  static _fixFilter (filter) {
+    let { defaultFilter } = this
+    return _.defaults({}, filter, defaultFilter)
   }
 }
 
@@ -37,5 +49,8 @@ C.schema = _.assign(bSchemaCopy, {
   updatedAt: { type: Date },
   deletedAt: { type: Date }
 })
+C.defaultFilter = {
+  deletedAt: null // 所有操作都基于未"删除"的对象
+}
 
 module.exports = C

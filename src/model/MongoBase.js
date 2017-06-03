@@ -1,16 +1,9 @@
-let { validate } = require('schema-validator2')
 let { ObjectID } = require('mongodb')
 let { getColl } = require('../db')
 let { toFieldsObj } = require('../../util')
+let B = require('./SchemaBase')
 
-let C = class MongoBase {
-  // 验证data是否符合schema 通过则返回空 不通过则返回原因
-  // partial为true表明局部验证 默认为整体验证
-  static validate ({ data, partial }) {
-    let { schema } = this
-    return validate({ schema, data, partial })
-  }
-
+let C = class MongoBase extends B {
   static async find ({ one, filter, fields, sort, skip, limit }) {
     let coll = await this.getColl()
     let method = one ? 'findOne' : 'find'
@@ -24,11 +17,9 @@ let C = class MongoBase {
     return promise
   }
 
-  static async insert ({ many, data }) {
+  static async count ({ filter, skip, limit }) {
     let coll = await this.getColl()
-    let method = many ? 'insertMany' : 'insertOne'
-    let ret = await coll[method](data)
-    return ret
+    return coll.count(filter, { skip, limit })
   }
 
   // 为了数据安全 remove为高危方法 添加dangerously语义
@@ -40,16 +31,31 @@ let C = class MongoBase {
     return ret
   }
 
-  static async update ({ many, filter, replace, set, unset }) {
+  static async insert ({ many, data }) {
     let coll = await this.getColl()
-    let update
-    if (replace) {
-      update = replace
-    } else {
-      update = {}
-      if (set) update.$set = set
-      if (unset) update.$unset = unset
+    let method
+    let prune = d => {
+      return this.prune({ data: d, exclude: ['_id'] })
     }
+
+    if (many) {
+      method = 'insertMany'
+      data = data.map(prune)
+    } else {
+      method = 'insertOne'
+      data = prune(data)
+    }
+    let ret = await coll[method](data)
+    return ret
+  }
+
+  // 暂时只支持 $set操作符
+  // $unset的validate环节 负担太重 暂不支持
+  static async update ({ many, filter, set }) {
+    let coll = await this.getColl()
+    set = this.prune({ data: set, partial: true })
+
+    let update = { $set: set }
     let method = many ? 'updateMany' : 'updateOne'
     let ret = await coll[method](filter, update)
     return ret

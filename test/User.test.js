@@ -53,12 +53,12 @@ test.serial('insert one', async t => {
   t.is(User._mockData.length, 5)
 
   let ret = await User.insert({
-    data: { foo: 1, bar: 2 }
+    data: { roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
   })
   t.is(ret.insertedCount, 1)
   t.is(ret.insertedIds.length, 1)
   t.is(ret.ops.length, 1)
-  t.is(ret.ops[0].bar, 2)
+  t.is(ret.ops[0].ad, 'grace.fan')
 
   let opId = ret.ops[0]._id
   t.truthy(opId instanceof ObjectID)
@@ -66,16 +66,22 @@ test.serial('insert one', async t => {
   t.is(User._mockData.length, 6)
 })
 
-test.serial('insert one', async t => {
+test.serial('insert one with _id', async t => {
+  let promise = User.insert({
+    data: { _id: 123, roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
+  })
+  let err = await t.throws(promise)
+  t.regex(err.message, /unrecognized keys/)
+})
+
+test.serial('insert many', async t => {
   t.is(User._mockData.length, 6)
 
   let ret = await User.insert({
     many: true,
-    data: [
-      { foo: 1, bar: 2 },
-      { foo: 1, bar: 2 },
-      { foo: 1, bar: 2 }
-    ]
+    data: _.times(3, () => {
+      return { roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
+    })
   })
   t.is(ret.insertedCount, 3)
   t.is(ret.insertedIds.length, 3)
@@ -85,4 +91,69 @@ test.serial('insert one', async t => {
   let arr2 = ret.insertedIds.sort()
   t.deepEqual(arr1, arr2)
   t.is(User._mockData.length, 9)
+})
+
+test.serial('update one', async t => {
+  let ret = await User.update({
+    filter: { ad: 'nesger.guo' },
+    set: { name: 'Unicorn' }
+  })
+  t.is(ret.matchedCount, 1)
+  t.is(ret.modifiedCount, 1)
+
+  let doc = await User.find({
+    one: true,
+    filter: { ad: 'nesger.guo' },
+    fields: ['name']
+  })
+  t.is(doc.name, 'Unicorn')
+})
+
+test.serial('update many', async t => {
+  let count = 4 // 前面insert的总数
+  let ret = await User.update({
+    many: true,
+    filter: { ad: 'grace.fan' },
+    set: { name: '2333' }
+  })
+  t.is(ret.matchedCount, count)
+  t.is(ret.modifiedCount, count)
+
+  let docs = await User.find({
+    filter: { ad: 'grace.fan' },
+    fields: ['name']
+  })
+  let expected = _.times(count, () => ({ name: '2333' }))
+  t.deepEqual(docs, expected)
+})
+
+test.serial('delete one', async t => {
+  let ret = await User.delete({
+    filter: { ad: 'nesger.guo' }
+  })
+  t.is(ret.matchedCount, 1)
+  t.is(ret.modifiedCount, 1)
+
+  let doc = await User.find({
+    one: true,
+    filter: { ad: 'nesger.guo' },
+    fields: ['name']
+  })
+  t.is(doc, null)
+})
+
+test.serial('delete many', async t => {
+  let ret = await User.delete({
+    many: true,
+    filter: { ad: 'grace.fan' }
+  })
+  t.is(ret.matchedCount, 4) // 前面insert的总数
+  t.is(ret.modifiedCount, 4)
+
+  let docs = await User.find({
+    many: true,
+    filter: { ad: 'grace.fan' },
+    fields: ['name']
+  })
+  t.is(docs.length, 0)
 })

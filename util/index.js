@@ -1,3 +1,5 @@
+let _ = require('lodash')
+
 exports.isTest = isTest
 function isTest () {
   return process.argv[2].includes('node_modules/ava')
@@ -21,13 +23,18 @@ function sleep (duration) {
 
 exports.toFieldsObj = toFieldsObj
 function toFieldsObj (arr) {
-  return arr.reduce((acc, v) => {
+  let obj = arr.reduce((acc, v) => {
     acc[v] = 1
     return acc
   }, {})
+  obj = _.defaults({}, obj, { _id: 0 }) // 默认不显示_id
+  return obj
 }
 
 exports.toFieldsArr = toFieldsArr
 function toFieldsArr (obj) {
-  return Object.keys(obj)
+  return _.reduce(obj, (acc, v, k) => {
+    if (v) acc.push(k)
+    return acc
+  }, [])
 }

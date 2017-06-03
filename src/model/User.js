@@ -10,15 +10,16 @@ let ADMIN = 5
 let PROVIDER = 8
 
 let RoleProp = {
+  required: true,
   type: Number,
-  enum: [CLIENT, ADMIN, PROVIDER]
+  enum: [CLIENT, ADMIN, PROVIDER] // todo
 }
 
 let bSchemaCopy = _.clone(B.schema)
 C.schema = _.assign(bSchemaCopy, {
-  uid: { type: String, required: true },
   name: { type: String, required: true },
   roles: { type: Array, element: RoleProp, required: true },
+  ad: { type: String },
   account: { type: String },
   password: { type: String }
 })
