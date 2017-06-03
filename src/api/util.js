@@ -63,3 +63,21 @@ function parsePagination (ctx) {
   }
   return { skip, limit, sort }
 }
+
+exports.koaPagin = koaPagin
+async function koaPagin (ctx, next) {
+  if (ctx.method === 'GET') {
+    let { page, skip, limit } = ctx.query
+    limit = parseInt(limit) || 10
+    if ('skip' in ctx.query) {
+      skip = parseInt(skip) || 0
+    } else {
+      page = parseInt(page) || 1
+      skip = limit * (page - 1)
+    }
+    // todo: 可多个字段 组合sort
+    let sort = { createdAt: -1 } // 默认按日期逆序
+    ctx.state.pagin = { skip, limit, sort }
+  }
+  await next()
+}

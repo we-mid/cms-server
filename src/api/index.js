@@ -1,6 +1,6 @@
 let Router = require('koa-router')
 let { basename } = require('path')
-let { koaJson, koaUpload } = require('./util')
+let { koaJson, koaUpload, koaPagin } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
 let { findBy } = require('../dao')
 let logger = require('../logger')
@@ -87,6 +87,8 @@ apiRouter.post('/ap/upload', koaUpload, ctx => {
   let id = basename(path)
   ctx.body = { id }
 })
+
+apiRouter.get('*/list', koaPagin)
 
 ;[USERS, ORDERS, PRODUCTS].forEach(resource => {
   let { registerResource } = require(`./${resource}`)
