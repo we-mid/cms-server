@@ -2,7 +2,7 @@ let Router = require('koa-router')
 let { basename } = require('path')
 let { koaJson, koaUpload, koaPagin } = require('./util')
 let { USERS, ORDERS, PRODUCTS } = require('../const')
-let { findBy } = require('../dao')
+let { User } = require('../model')
 let logger = require('../logger')
 
 exports.registerApi = registerApi
@@ -48,7 +48,8 @@ apiRouter.post('/ap/login', koaJson, async ctx => {
   if (!account) ctx.throw(400, '账号不能为空')
   if (!password) ctx.throw(400, '密码不能为空')
 
-  let { doc: user } = await findBy(USERS, {
+  let user = User.find({
+    one: true,
     filter: { account, password },
     fields: ['uid', 'name', 'roles']
   })

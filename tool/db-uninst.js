@@ -1,7 +1,8 @@
+require('../src/env')
 let {
-  ORDERS, CATEGORIES, PROVIDERS
+  CATEGORIES, PROVIDERS
 } = require('../src/const')
-let { User, Product } = require('../src/model')
+let { User, Order, Product } = require('../src/model')
 let { getColl, closeDb } = require('../src/db')
 
 unist()
@@ -13,11 +14,10 @@ async function unist () {
   coll = await getColl(PROVIDERS)
   await coll.deleteMany({})
 
-  coll = await getColl(ORDERS)
-  await coll.deleteMany({})
-
   await Product.dangerouslyDrop()
   await User.dangerouslyDrop()
+  await Order.dangerouslyDrop()
 
+  await User.closeDb()
   await closeDb()
 }

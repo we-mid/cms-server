@@ -23,7 +23,7 @@ async function findBy (resource, { filter, fields, relation, pagination }) {
 
 async function listBy (resource, { filter, fields, relation, pagination }) {
   fields = toFieldsObj(fields)
-  filter = _.defaults(filter, defaultFilter) // avoiding mutation
+  filter = _.defaults({}, filter, defaultFilter) // avoiding mutation
   let { sort, skip, limit } = pagination
   let options = { sort, skip, limit, fields }
 

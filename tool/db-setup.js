@@ -1,7 +1,8 @@
+require('../src/env')
 let {
-  ORDERS, CATEGORIES, PROVIDERS
+  CATEGORIES, PROVIDERS
 } = require('../src/const')
-let { User, Product } = require('../src/model')
+let { User, Order, Product } = require('../src/model')
 let { getColl, closeDb } = require('../src/db')
 let mockData = require('../test/_mockData')
 
@@ -32,28 +33,19 @@ async function setup () {
   docs = docs.map(wrapDoc)
   await coll.insertMany(docs)
 
-  // setup products collection
   await Product.index({ uid: 1 }, { unique: true })
   await Product.index({ name: 1 }, { unique: true })
   await Product.insert({ docs: mockData.Product })
 
-  // setup users collection
   await User.index({ uid: 1 }, { unique: true })
   await User.index({ ad: 1 }, { unique: true })
   await User.insert({ docs: mockData.User })
 
-  // setup orders collection
-  coll = await getColl(ORDERS)
-  coll.createIndex({ uid: 1 }, { unique: true })
-  let count = 0
-  docs = [
-    { uid: `${++count}`, product: '3', amount: 2, sum: 44, user: '2', address: '中兴西座 15F' },
-    { uid: `${++count}`, product: '2', amount: 3, sum: 54, user: '3', address: '康佳研发 21F' }
-  ]
-  docs = docs.map(wrapDoc)
-  await coll.insertMany(docs)
+  await Order.index({ uid: 1 }, { unique: true })
+  await Order.insert({ docs: mockData.Order })
 
   await closeDb()
+  await User.closeDb()
 }
 
 function wrapDoc (doc) {

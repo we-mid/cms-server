@@ -23,6 +23,15 @@ exports.User = (() => {
   return docs
 })()
 
+exports.Order = (() => {
+  let docs = [
+    { product: '3', amount: 2, sum: 44, user: '2', address: '中兴西座 15F' },
+    { product: '2', amount: 3, sum: 54, user: '3', address: '康佳研发 21F' }
+  ]
+  docs.forEach(wrapDoc)
+  return docs
+})()
+
 function wrapDoc (doc, i) {
   doc._id = new ObjectID()
   doc.createdAt = new Date()

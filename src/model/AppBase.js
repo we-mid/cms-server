@@ -37,12 +37,12 @@ module.exports = B => {
     }
   }
 
+  let uidProp = { type: String, default: C.genDocUid }
+  C.uidProp = uidProp
+
   let bSchemaCopy = _.clone(B.schema)
   C.schema = _.assign(bSchemaCopy, {
-    uid: {
-      type: String,
-      default: () => C.genDocUid()
-    }
+    uid: uidProp
   })
   C.secretFields = []
 

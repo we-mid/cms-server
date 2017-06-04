@@ -7,7 +7,7 @@ let list = [
 ].map(require)
 
 // 将list循环继承 出一个最终的Base类
-let Base = list.reduce((B, fn, i) => {
+let Base = list.reduce((B, fn) => {
   let C = fn(B)
   return C
 }, null)
