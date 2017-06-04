@@ -66,12 +66,12 @@ test.serial('insert one', async t => {
   t.is(User._mockData.length, 6)
 })
 
-test.serial('insert one with _id', async t => {
+test.serial('insert one with invalid _id', async t => {
   let promise = User.insert({
     data: { _id: 123, roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
   })
   let err = await t.throws(promise)
-  t.regex(err.message, /unrecognized keys/)
+  t.regex(err.message, /is not a/)
 })
 
 test.serial('insert many', async t => {

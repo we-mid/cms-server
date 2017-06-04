@@ -2,12 +2,14 @@ let { ObjectID } = require('mongodb')
 let { getColl } = require('../db')
 let { toFieldsObj } = require('../../util')
 let B = require('./SchemaBase')
+let _ = require('lodash')
 
 let C = class MongoBase extends B {
   static async find ({ one, filter, fields, sort, skip, limit }) {
     let coll = await this.getColl()
     let method = one ? 'findOne' : 'find'
     fields = toFieldsObj(fields)
+
     let promise = coll[method](filter, {
       fields, sort, skip, limit
     })
@@ -35,7 +37,8 @@ let C = class MongoBase extends B {
     let coll = await this.getColl()
     let method
     let prune = d => {
-      return this.prune({ data: d, exclude: ['_id'] })
+      // return this.prune({ data: d, exclude: ['_id'] })
+      return this.prune({ data: d })
     }
 
     if (many) {
@@ -62,12 +65,21 @@ let C = class MongoBase extends B {
   }
 
   static async getColl () {
-    return getColl(this.name)
+    return getColl(this.getCollName())
+  }
+  // 用于定制collName映射关系
+  static getCollName () {
+    return this.name
   }
 }
 
-C.schema = {
-  _id: { type: ObjectID, required: true }
-}
+let bSchemaCopy = _.clone(B.schema)
+C.schema = _.assign(bSchemaCopy, {
+  _id: {
+    required: true,
+    type: ObjectID,
+    default: () => new ObjectID()
+  }
+})
 
 module.exports = C

@@ -75,8 +75,10 @@ async function koaPagin (ctx, next) {
       page = parseInt(page) || 1
       skip = limit * (page - 1)
     }
-    // todo: 可多个字段 组合sort
-    let sort = { createdAt: -1 } // 默认按日期逆序
+    // todo: 可多个字段 组合sort传入
+    // 默认按日期逆序
+    // let sort = [['createdAt', -1], ['_id', -1]]
+    let sort = { _id: -1 }
     ctx.state.pagin = { skip, limit, sort }
   }
   await next()

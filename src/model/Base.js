@@ -1,4 +1,5 @@
-let B = require('./TimeBase')
+let B = require('./DateBase')
+let uuid = require('uuid')
 let _ = require('lodash')
 
 class C extends B {
@@ -17,14 +18,28 @@ class C extends B {
   // paginate 便于分页场景的find
   static async paginate ({ filter, fields, pagin }) {
     let { sort, skip, limit } = pagin
+    pagin.sort = { _id: -1 }
+    console.log('pagin', pagin)
     let [total, docs] = await Promise.all([
       this.count({ filter }), // 获取总个数
       this.find({ filter, fields, sort, skip, limit })
     ])
     return { total, docs }
   }
+
+  static genDocUid () {
+    return uuid().substr(0, 8)
+  }
 }
 
+let bSchemaCopy = _.clone(B.schema)
+C.schema = _.assign(bSchemaCopy, {
+  uid: {
+    required: true,
+    type: String,
+    default: () => C.genDocUid()
+  }
+})
 C.secretFields = []
 
 module.exports = C

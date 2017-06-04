@@ -1,6 +1,6 @@
 let { toFieldsArr } = require('../util')
-let mockData = require('../util/mock')
 let { ObjectID } = require('mongodb')
+let mockData = require('./_mockData')
 let _ = require('lodash')
 
 // fime: unique/indexes

@@ -17,12 +17,12 @@ let C = class SchemaBase {
 
   static prune ({ data, partial, exclude }) {
     // 补充schema中设定的默认值
-    let { schema } = this
     data = _.clone(data)
-    _.each(data, (v, k) => {
-      let defaultV = schema[k] && schema[k].default
+    _.each(this.schema, (r, k) => {
       // mongo数据中 null/undefined视为相同
-      if (defaultV != null && v == null) {
+      if (data[k] == null && r.default != null) {
+        let defaultV = _.isFunction(r.default)
+          ? r.default() : r.default
         data[k] = defaultV
       }
     })
@@ -34,8 +34,6 @@ let C = class SchemaBase {
   }
 }
 
-C.schema = {
-  uid: { type: String, required: true }
-}
+C.schema = {}
 
 module.exports = C

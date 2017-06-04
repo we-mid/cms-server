@@ -1,11 +1,7 @@
-let { USERS } = require('../const')
+let { USERS: R } = require('../const')
 let { User } = require('../model')
-let { listBy } = require('../dao')
-let { parsePagination } = require('./util')
 
 exports.registerResource = registerResource
-
-let R = USERS
 
 function registerResource (router) {
   // dont forget to `parseInt` the number params

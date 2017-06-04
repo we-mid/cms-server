@@ -6,7 +6,7 @@ exports.User = (() => {
     { roles: [1, 5], ad: 'admin01', name: 'Admin 01', account: 'admin', password: 'admin' },
     { roles: [1], ad: 'test0008', name: 'test0008' },
     { roles: [1], ad: 'nesger.guo', name: '铜仁' },
-    { roles: [1], ad: 'Leo Lin', name: 'Leo' }
+    { roles: [1], ad: 'leo.lin', name: 'Leo' }
   ]
   docs.forEach(wrapDoc)
   return docs

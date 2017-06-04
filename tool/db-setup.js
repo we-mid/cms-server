@@ -3,7 +3,7 @@ let {
 } = require('../src/const')
 let { User } = require('../src/model')
 let { getColl, closeDb } = require('../src/db')
-let mockData = require('../util/mock')
+let mockData = require('../test/_mockData')
 
 setup()
 
@@ -48,9 +48,8 @@ async function setup () {
 
   // setup users collection
   coll = await getColl(USERS)
-  coll.createIndex({ uid: 1 }, { unique: true })
-  coll.createIndex({ ad: 1 }, { unique: true })
-  coll.createIndex({ createdAt: 1 })
+  coll.ensureIndex({ uid: 1 }, { unique: true })
+  coll.ensureIndex({ ad: 1 }, { unique: true })
   await User.insert({ many: true, data: mockData.User })
 
   // setup orders collection
