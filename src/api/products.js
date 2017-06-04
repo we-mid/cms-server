@@ -1,6 +1,7 @@
+let { Product } = require('../model')
 let { PRODUCTS } = require('../const')
-let { listBy, createBy, deleteBy, updateBy } = require('../dao')
-let { koaJson, parsePagination } = require('./util')
+let { createBy, deleteBy, updateBy } = require('../dao')
+let { koaJson } = require('./util')
 let _ = require('lodash')
 
 exports.registerResource = registerResource
@@ -31,11 +32,10 @@ function registerResource (router) {
 
   // dont forget to `parseInt` the number params
   router.get(`/a/${R}/list`, async ctx => {
-    let fields = ['uid', 'name', 'description', 'provider', 'category', 'price', 'createdAt']
-    let pagination = parsePagination(ctx)
-    let filter = {}
-    let { total, docs } = await listBy(R, {
-      filter, fields, pagination
+    let { total, docs } = await Product.paginate({
+      pagin: ctx.state.pagin,
+      fields: ['uid', 'name', 'description', 'provider', 'category', 'price', 'createdAt'],
+      filter: {}
     })
     ctx.body = { total, docs }
   })

@@ -24,15 +24,6 @@ let C = class MongoBase extends B {
     return coll.count(filter, { skip, limit })
   }
 
-  // 为了数据安全 remove为高危方法 添加dangerously语义
-  // 日常使用delete 修改状态
-  static async dangerouslyDelete ({ many, filter }) {
-    let coll = await this.getColl()
-    let method = many ? 'deleteMany' : 'deleteOne'
-    let ret = await coll[method](filter)
-    return ret
-  }
-
   static async insert ({ many, data }) {
     let coll = await this.getColl()
     let method
@@ -48,8 +39,20 @@ let C = class MongoBase extends B {
       method = 'insertOne'
       data = prune(data)
     }
-    let ret = await coll[method](data)
-    return ret
+    return coll[method](data)
+  }
+
+  // 为了数据安全 remove为高危方法 添加dangerously语义
+  // 日常使用delete 修改状态
+  static async dangerouslyDelete ({ many, filter }) {
+    let coll = await this.getColl()
+    let method = many ? 'deleteMany' : 'deleteOne'
+    return coll[method](filter)
+  }
+
+  static async dangerouslyDrop () {
+    let coll = await this.getColl()
+    return coll.drop()
   }
 
   // 暂时只支持 $set操作符
@@ -60,8 +63,12 @@ let C = class MongoBase extends B {
 
     let update = { $set: set }
     let method = many ? 'updateMany' : 'updateOne'
-    let ret = await coll[method](filter, update)
-    return ret
+    return coll[method](filter, update)
+  }
+
+  static async index (spec, options) {
+    let coll = await this.getColl()
+    return coll.ensureIndex(spec, options)
   }
 
   static async getColl () {

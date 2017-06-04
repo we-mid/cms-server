@@ -1,5 +1,16 @@
 let { ObjectID } = require('mongodb')
 
+exports.Product = (() => {
+  let docs = [
+    // todo: make `category` an array list
+    { provider: 'jyj', category: 'lc', name: '特制鸡块饭', price: 25 },
+    { provider: 'mdw', category: 'bf', name: '小笼包', price: 18 },
+    { provider: 'ksf', category: 'bf', name: '芝士蛋糕', price: 22 }
+  ]
+  docs.forEach(wrapDoc)
+  return docs
+})()
+
 exports.User = (() => {
   let docs = [
     { roles: [8], name: 'Provider 01', account: 'provider', password: 'provider' },

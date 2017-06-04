@@ -58,7 +58,7 @@ test(t => {
       foo: '123'
     }
   })
-  t.regex(rs, /extra keys/)
+  t.regex(rs, /unrecognized keys/)
 })
 
 // partial: false
@@ -90,6 +90,17 @@ test(t => {
 test(t => {
   let rs = Base.validate({
     data: {
+      createdAt: new Date(),
+      _id: new ObjectID()
+    }
+  })
+  t.regex(rs, /is required/)
+})
+
+test(t => {
+  let rs = Base.validate({
+    data: {
+      uid: '333',
       createdAt: new Date(),
       _id: new ObjectID()
     }
