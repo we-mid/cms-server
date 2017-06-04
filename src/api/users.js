@@ -1,5 +1,6 @@
-let { USERS: R } = require('../const')
 let { User } = require('../model')
+
+let R = User.getResName()
 
 exports.registerResource = registerResource
 

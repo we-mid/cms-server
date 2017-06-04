@@ -1,6 +1,8 @@
-let B = require('./DateBase')
+let decamelize = require('decamelize')
+let pluralize = require('pluralize')
 let uuid = require('uuid')
 let _ = require('lodash')
+let B = require('./DateBase')
 
 class C extends B {
   // 扩展find 机密字段保护
@@ -29,6 +31,11 @@ class C extends B {
 
   static genDocUid () {
     return uuid().substr(0, 8)
+  }
+
+  // 提供更贴近用户的语义名词 去驼峰+复数
+  static getResName () {
+    return pluralize(decamelize(this.name, '-'))
   }
 }
 

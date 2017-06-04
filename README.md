@@ -13,6 +13,18 @@
 - nuxt
 - element-ui
 
+## Todo
+
+- nuxt
+- schedule
+- logging
+- upload
+- role auth
+- db model schema
+- form validate
+- redis cache
+- transaction
+
 ### Notes
 
 - mongodb api now is promise based

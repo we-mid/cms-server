@@ -1,7 +1,8 @@
 let { Product } = require('../model')
-let { PRODUCTS: R } = require('../const')
 let { koaJson } = require('./util')
 let _ = require('lodash')
+
+let R = Product.getResName()
 
 exports.registerResource = registerResource
 

@@ -7,8 +7,8 @@ let _ = require('lodash')
 // mock mongodb coll 便于不经过db 测试model
 class MockColl {
   constructor (Model) {
-    this.name = Model.name
-    this.data = mockData[this.name]
+    let name = Model.getCollName()
+    this.data = mockData[name]
   }
 
   static _fixFilter (filter) {
@@ -137,7 +137,7 @@ function useMockDb (Model) {
   let mockColl = new MockColl(Model)
   let original = Model.getColl
 
-  Model._mockData = mockData[Model.name]
+  Model._mockData = mockColl.data
   Model.getColl = async () => mockColl
 
   Model.restoreMockDb = () => {

@@ -5,11 +5,12 @@
   "main": "src/",
   "license": "MIT",
   "scripts": {
-    "test": "ava test",
+    "test": "ava test --verbose --fail-fast",
     "dev": "nodemon .",
     "start": "node ."
   },
   "dependencies": {
+    "decamelize": "^1.2.0",
     "fs-extra-promise": "^1.0.1",
     "ioredis": "^3.0.0",
     "koa": "^2.2.0",
@@ -25,6 +26,7 @@
     "mongodb": "^2.2.25",
     "node-schedule": "^1.2.3",
     "object-access": "^1.2.2",
+    "pluralize": "^5.0.0",
     "require-directory": "^2.1.1",
     "schema-validator2": "0.0.3",
     "uuid": "^3.0.1",
