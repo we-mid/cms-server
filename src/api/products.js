@@ -3,12 +3,10 @@ let { koaJson } = require('./util')
 let _ = require('lodash')
 
 let R = Product.getResName()
-
-exports.registerResource = registerResource
-
 let editFields = ['name', 'description', 'provider', 'category', 'price']
 let listFields = [...editFields, 'uid', 'createdAt']
 
+exports.registerResource = registerResource
 function registerResource (router) {
   router.post(`/a/${R}/create`, koaJson, async ctx => {
     let doc = _.pick(ctx.request.body, editFields)
@@ -35,7 +33,7 @@ function registerResource (router) {
 
   // dont forget to `parseInt` the number params
   router.get(`/a/${R}/list`, async ctx => {
-    let { total, docs } = await Product.paginate({
+    let { total, docs } = await Product.list({
       pagin: ctx.state.pagin,
       fields: listFields,
       filter: {}

@@ -15,9 +15,13 @@ let C = class SchemaBase {
       data = _.clone(data)
       _.each(this.schema, (r, k) => {
         // mongo数据中 null/undefined视为相同
-        if (data[k] == null && r.default != null) {
-          let defaultV = _.isFunction(r.default)
-            ? r.default() : r.default
+        let defaultF = r.default
+        // if (!defaultF && r.type === String && !r.optional) {
+        //   defaultF = ''
+        // }
+        if (data[k] == null && defaultF != null) {
+          let defaultV = _.isFunction(defaultF)
+            ? defaultF() : defaultF
           data[k] = defaultV
         }
       })

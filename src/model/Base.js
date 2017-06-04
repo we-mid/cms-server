@@ -17,11 +17,9 @@ class C extends B {
     return super.find({ one, filter, fields, sort, skip, limit })
   }
 
-  // paginate 便于分页场景的find
-  static async paginate ({ filter, fields, pagin }) {
+  // list 便于分页场景的find
+  static async list ({ filter, fields, pagin }) {
     let { sort, skip, limit } = pagin
-    pagin.sort = { _id: -1 }
-    console.log('pagin', pagin)
     let [total, docs] = await Promise.all([
       this.count({ filter }), // 获取总个数
       this.find({ filter, fields, sort, skip, limit })
@@ -42,7 +40,6 @@ class C extends B {
 let bSchemaCopy = _.clone(B.schema)
 C.schema = _.assign(bSchemaCopy, {
   uid: {
-    required: true,
     type: String,
     default: () => C.genDocUid()
   }

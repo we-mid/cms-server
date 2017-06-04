@@ -45,9 +45,9 @@ let C = class TimeBase extends B {
 
 let bSchemaCopy = _.clone(B.schema)
 C.schema = _.assign(bSchemaCopy, {
-  createdAt: { type: Date, required: true },
-  updatedAt: { type: Date },
-  deletedAt: { type: Date }
+  createdAt: { type: Date },
+  updatedAt: { type: Date, optional: true },
+  deletedAt: { type: Date, optional: true }
 })
 C.defaultFilter = {
   deletedAt: null // 所有操作都基于未"删除"的对象

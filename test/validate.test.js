@@ -58,7 +58,7 @@ test(t => {
       foo: '123'
     }
   })
-  t.regex(rs, /unrecognized keys/)
+  t.regex(rs, /extra keys/)
 })
 
 // partial: false

@@ -83,7 +83,6 @@ let C = class MongoBase extends B {
 let bSchemaCopy = _.clone(B.schema)
 C.schema = _.assign(bSchemaCopy, {
   _id: {
-    required: true,
     type: ObjectID,
     default: () => new ObjectID()
   }
