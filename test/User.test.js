@@ -53,7 +53,7 @@ test.serial('insert one', async t => {
   t.is(User._mockData.length, 5)
 
   let ret = await User.insert({
-    data: { roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
+    doc: { roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
   })
   t.is(ret.insertedCount, 1)
   t.is(ret.insertedIds.length, 1)
@@ -68,7 +68,7 @@ test.serial('insert one', async t => {
 
 test.serial('insert one with invalid _id', async t => {
   let promise = User.insert({
-    data: { _id: 123, roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
+    doc: { _id: 123, roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
   })
   let err = await t.throws(promise)
   t.regex(err.message, /is not a/)
@@ -78,8 +78,7 @@ test.serial('insert many', async t => {
   t.is(User._mockData.length, 6)
 
   let ret = await User.insert({
-    many: true,
-    data: _.times(3, () => {
+    docs: _.times(3, () => {
       return { roles: [1], ad: 'grace.fan', name: 'Fan-fan' }
     })
   })

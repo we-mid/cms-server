@@ -16,16 +16,18 @@ let C = class SchemaBase {
   }
 
   static prune ({ data, partial, exclude }) {
-    // 补充schema中设定的默认值
-    data = _.clone(data)
-    _.each(this.schema, (r, k) => {
-      // mongo数据中 null/undefined视为相同
-      if (data[k] == null && r.default != null) {
-        let defaultV = _.isFunction(r.default)
-          ? r.default() : r.default
-        data[k] = defaultV
-      }
-    })
+    // 如果为整体prune 补充schema中设定的默认值
+    if (!partial) {
+      data = _.clone(data)
+      _.each(this.schema, (r, k) => {
+        // mongo数据中 null/undefined视为相同
+        if (data[k] == null && r.default != null) {
+          let defaultV = _.isFunction(r.default)
+            ? r.default() : r.default
+          data[k] = defaultV
+        }
+      })
+    }
 
     // 检验不通过则报错 通过则返回
     let rs = this.validate({ data, partial, exclude })

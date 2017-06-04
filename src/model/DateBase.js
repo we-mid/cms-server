@@ -3,16 +3,16 @@ let _ = require('lodash')
 
 let C = class TimeBase extends B {
   // 可指定createdAt
-  static async insert ({ many, data }) {
+  static async insert ({ doc, docs }) {
     let createdAt = new Date()
-    if (many) {
-      data = data.map(d => {
+    if (docs) {
+      docs = docs.map(d => {
         return _.defaults({}, d, { createdAt })
       })
     } else {
-      data = _.defaults({}, data, { createdAt })
+      doc = _.defaults({}, doc, { createdAt })
     }
-    return super.insert({ many, data })
+    return super.insert({ doc, docs })
   }
 
   static async find ({ one, filter, fields, sort, skip, limit }) {

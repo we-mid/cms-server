@@ -35,12 +35,12 @@ async function setup () {
   // setup products collection
   await Product.index({ uid: 1 }, { unique: true })
   await Product.index({ name: 1 }, { unique: true })
-  await Product.insert({ many: true, data: mockData.Product })
+  await Product.insert({ docs: mockData.Product })
 
   // setup users collection
   await User.index({ uid: 1 }, { unique: true })
   await User.index({ ad: 1 }, { unique: true })
-  await User.insert({ many: true, data: mockData.User })
+  await User.insert({ docs: mockData.User })
 
   // setup orders collection
   coll = await getColl(ORDERS)

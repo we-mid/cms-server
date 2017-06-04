@@ -24,7 +24,7 @@ let C = class MongoBase extends B {
     return coll.count(filter, { skip, limit })
   }
 
-  static async insert ({ many, data }) {
+  static async insert ({ doc, docs }) {
     let coll = await this.getColl()
     let method
     let prune = d => {
@@ -32,14 +32,14 @@ let C = class MongoBase extends B {
       return this.prune({ data: d })
     }
 
-    if (many) {
+    if (docs) {
       method = 'insertMany'
-      data = data.map(prune)
+      docs = docs.map(prune)
     } else {
       method = 'insertOne'
-      data = prune(data)
+      doc = prune(doc)
     }
-    return coll[method](data)
+    return coll[method](docs || doc)
   }
 
   // 为了数据安全 remove为高危方法 添加dangerously语义

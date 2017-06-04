@@ -74,6 +74,7 @@ class MockColl {
   }
 
   // update暂时支持$set操作符
+  // 暂不支持upsert功能
   async updateMany (filter, update) {
     let C = this.constructor
     filter = C._fixFilter(filter)
@@ -84,6 +85,7 @@ class MockColl {
     })
     let count = docs.length
     return {
+      result: { ok: 1, n: count, nModified: count },
       matchedCount: count,
       modifiedCount: count
     }
@@ -98,6 +100,7 @@ class MockColl {
     }
     let count = doc ? 1 : 0
     return {
+      result: { ok: 1, n: count, nModified: count },
       matchedCount: count,
       modifiedCount: count
     }
@@ -109,6 +112,7 @@ class MockColl {
     let deleted = _.reject(this.data, filter)
     let count = deleted.length
     return {
+      result: { ok: 1, n: count },
       deletedCount: count
     }
   }
@@ -122,6 +126,7 @@ class MockColl {
     }
     let count = exists ? 1 : 0
     return {
+      result: { ok: 1, n: count },
       deletedCount: count
     }
   }
