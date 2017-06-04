@@ -23,12 +23,12 @@
     "koa-session": "^5.0.0",
     "koa-static": "^3.0.0",
     "lodash": "^4.17.4",
+    "mongo-model-2": "0.0.1",
     "mongodb": "^2.2.25",
     "node-schedule": "^1.2.3",
     "object-access": "^1.2.2",
     "pluralize": "^5.0.0",
     "require-directory": "^2.1.1",
-    "schema-validator2": "0.0.3",
     "uuid": "^3.0.1",
     "winston": "^2.3.1",
     "winston-daily-rotate-file": "^1.4.6"

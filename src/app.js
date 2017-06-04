@@ -1,3 +1,4 @@
+require('./env')
 let Koa = require('koa')
 let mount = require('koa-mount')
 let helmet = require('koa-helmet')

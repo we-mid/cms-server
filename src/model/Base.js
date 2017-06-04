@@ -1,8 +1,8 @@
 let list = [
-  './SchemaBase',
-  './DbBase',
-  './CollBase',
-  './DateBase',
+  'mongo-model-2/src/SchemaBase',
+  'mongo-model-2/src/DbBase',
+  'mongo-model-2/src/CollBase',
+  'mongo-model-2/src/DateBase',
   './AppBase'
 ].map(require)
 
@@ -13,3 +13,8 @@ let Base = list.reduce((B, fn, i) => {
 }, null)
 
 module.exports = Base
+
+Base.mongoConfig = {
+  port: process.env.MONGO_PORT,
+  dbName: process.env.MONGO_DBNAME
+}

@@ -61,7 +61,8 @@ test.serial('insert one', async t => {
   t.is(ret.ops[0].ad, 'grace.fan')
 
   let opId = ret.ops[0]._id
-  t.truthy(opId instanceof ObjectID)
+  // t.truthy(opId instanceof ObjectID)
+  t.truthy(opId.constructor.name === 'ObjectID')
   t.truthy(opId.equals(ret.insertedIds[0]))
   t.is(User._mockData.length, 6)
 })

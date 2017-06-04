@@ -1,4 +1,3 @@
-let { dbName, mongoPort } = require('../../config')
 let decamelize = require('decamelize')
 let pluralize = require('pluralize')
 let uuid = require('uuid')
@@ -47,9 +46,5 @@ module.exports = B => {
   })
   C.secretFields = []
 
-  C.mongoConfig = {
-    port: mongoPort,
-    dbName
-  }
   return C
 }
