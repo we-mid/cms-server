@@ -1,3 +1,4 @@
+let { dbName, mongoPort } = require('../../config')
 let decamelize = require('decamelize')
 let pluralize = require('pluralize')
 let uuid = require('uuid')
@@ -45,5 +46,10 @@ C.schema = _.assign(bSchemaCopy, {
   }
 })
 C.secretFields = []
+
+C.mongoConfig = {
+  port: mongoPort,
+  dbName
+}
 
 module.exports = C

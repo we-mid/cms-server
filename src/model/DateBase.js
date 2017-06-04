@@ -1,4 +1,4 @@
-let B = require('./MongoBase')
+let B = require('./CollBase')
 let _ = require('lodash')
 
 let C = class TimeBase extends B {

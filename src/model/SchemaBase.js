@@ -19,7 +19,10 @@ let C = class SchemaBase {
         // if (!defaultF && r.type === String && !r.optional) {
         //   defaultF = ''
         // }
-        if (data[k] == null && defaultF != null) {
+        let isNone = r.type === String
+          ? !data[k]
+          : data[k] == null
+        if (isNone && defaultF != null) {
           let defaultV = _.isFunction(defaultF)
             ? defaultF() : defaultF
           data[k] = defaultV

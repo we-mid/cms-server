@@ -1,7 +1,6 @@
 let { ObjectID } = require('mongodb')
-let { getColl } = require('../db')
 let { toFieldsObj } = require('../../util')
-let B = require('./SchemaBase')
+let B = require('./DbBase')
 let _ = require('lodash')
 
 let C = class MongoBase extends B {
@@ -72,7 +71,9 @@ let C = class MongoBase extends B {
   }
 
   static async getColl () {
-    return getColl(this.getCollName())
+    let collName = this.getCollName()
+    let db = await this.getDb()
+    return db.collection(collName)
   }
   // 用于定制collName映射关系
   static getCollName () {
