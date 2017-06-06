@@ -2,9 +2,21 @@ let decamelize = require('decamelize')
 let pluralize = require('pluralize')
 let uuid = require('uuid')
 let _ = require('lodash')
+let Promise = require('bluebird')
 
 module.exports = B => {
   let C = class AppBase extends B {
+    static validate ({ data, partial }) {
+      let { schema } = this
+      schema = _.clone(schema)
+      _.each(schema, (r, k) => {
+        if (r.ref) {
+          schema[k] = r.ref.schema.uid
+        }
+      })
+      return super.validate({ schema, data, partial })
+    }
+
     // 扩展find 机密字段保护
     static async find ({ one, filter, fields, sort, skip, limit }) {
       if (!fields || !fields.length) {
@@ -18,13 +30,30 @@ module.exports = B => {
     }
 
     // list 便于分页场景的find
-    static async list ({ filter, fields, pagin }) {
-      let { sort, skip, limit } = pagin
+    static async list ({ pagin, filter, fields, relation }) {
+      let { sort, skip, limit } = pagin || {}
       let [total, docs] = await Promise.all([
         this.count({ filter }), // 获取总个数
         this.find({ filter, fields, sort, skip, limit })
       ])
-      return { total, docs }
+
+      let refs = {}
+      if (relation) { // todo: 支持'.'嵌套外链
+        let keys = _.keys(relation)
+        await Promise.each(keys, async k => {
+          let rel = relation[k]
+          let M = this.schema[k].ref
+          let uids = _.map(docs, 'uid')
+          uids = _.compact(uids)
+          uids = _.uniq(uids)
+          let { docs: ds } = await M.list({
+            fields: rel.fields,
+            filter: { uid: { $in: uids } }
+          })
+          refs[M.name] = ds
+        })
+      }
+      return { total, docs, refs }
     }
 
     static genDocUid () {
@@ -37,12 +66,9 @@ module.exports = B => {
     }
   }
 
-  let uidProp = { type: String, default: C.genDocUid }
-  C.uidProp = uidProp
-
   let bSchemaCopy = _.clone(B.schema)
   C.schema = _.assign(bSchemaCopy, {
-    uid: uidProp
+    uid: { type: String, default: C.genDocUid }
   })
   C.secretFields = []
 

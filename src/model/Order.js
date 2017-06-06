@@ -9,11 +9,11 @@ let C = class Order extends B {
 
 let bSchemaCopy = _.clone(B.schema)
 C.schema = _.assign(bSchemaCopy, {
-  product: Product.uidProp,
+  product: { ref: Product },
   // price: Product.priceProp,
   amount: { type: Number, range: [1, 99], step: 1 },
   sum: { type: Number, range: [0, null] },
-  user: User.uidProp,
+  user: { ref: User },
   address: { type: String }
 })
 
