@@ -43,7 +43,7 @@ module.exports = B => {
         await Promise.each(keys, async k => {
           let rel = relation[k]
           let M = this.schema[k].ref
-          let uids = _.map(docs, 'uid')
+          let uids = _.map(docs, k)
           uids = _.compact(uids)
           uids = _.uniq(uids)
           let { docs: ds } = await M.list({

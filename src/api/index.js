@@ -1,8 +1,7 @@
 let Router = require('koa-router')
 let { basename } = require('path')
 let { koaJson, koaUpload, koaPagin } = require('./util')
-let { USERS, ORDERS, PRODUCTS } = require('../const')
-let { User } = require('../model')
+let { User, Order, Product } = require('../model')
 let logger = require('../logger')
 
 exports.registerApi = registerApi
@@ -91,8 +90,9 @@ apiRouter.post('/ap/upload', koaUpload, ctx => {
 
 apiRouter.get('*/list', koaPagin)
 
-;[USERS, ORDERS, PRODUCTS].forEach(resource => {
-  let { registerResource } = require(`./${resource}`)
+;[User, Order, Product].forEach(model => {
+  let resName = model.getResName()
+  let { registerResource } = require(`./${resName}`)
   registerResource(apiRouter)
 })
 

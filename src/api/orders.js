@@ -1,5 +1,5 @@
 let { Order } = require('../model')
-let { ORDERS: R } = require('../const')
+let R = Order.getResName()
 
 let listFields = ['uid', 'product', 'amount', 'sum', 'user', 'address', 'createdAt']
 
