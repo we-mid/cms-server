@@ -15,4 +15,4 @@ let Base = list.reduce((B, fn) => {
 module.exports = Base
 
 let { mongo } = require('../../config')
-Base.mongoConfig = mongo
+Object.assign(Base.mongoConfig, mongo)

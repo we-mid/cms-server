@@ -6,8 +6,8 @@ let Promise = require('bluebird')
 
 module.exports = B => {
   let C = class AppBase extends B {
-    static validate ({ data, partial }) {
-      let { schema } = this
+    static validate ({ schema, data, partial }) {
+      schema = schema || this.schema
       schema = _.clone(schema)
       _.each(schema, (r, k) => {
         if (r.ref) {

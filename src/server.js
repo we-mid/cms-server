@@ -1,9 +1,8 @@
-let { NODE_ENV } = require('./env')
+let { init } = require('./proc') // 始终最前
 let { app: { port } } = require('../config')
 let app = require('./app')
-let logger = require('./logger')
 
 let server = app.listen(port)
-logger.info('server开始运行', { port, NODE_ENV })
+init('server', { port })
 
 module.exports = server
