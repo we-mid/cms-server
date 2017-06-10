@@ -9,7 +9,7 @@ fs.ensureDirSync(logDir)
 let dailyRotate = new DailyRotateFile({
   dirname: logDir,
   filename: '.log',
-  datePattern: 'yyyy-MM-dd.',
+  datePattern: 'yyyy-MM-dd',
   prepend: true,
   level: process.env.ENV === 'development' ? 'debug' : 'info'
 })

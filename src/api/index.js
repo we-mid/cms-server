@@ -2,6 +2,7 @@ let Router = require('koa-router')
 let { basename } = require('path')
 let { koaJson, koaUpload, koaPagin } = require('./util')
 let { User, Order, Product } = require('../model')
+let { pickError } = require('../../util')
 let logger = require('../logger')
 
 exports.registerApi = registerApi
@@ -22,7 +23,13 @@ apiRouter.use(async (ctx, next) => {
       error
     }
     ctx.status = status
-    console.error('api error:', err)
+
+    let errObj = pickError(err)
+    if (status >= 500) {
+      logger.error('internal api error:', { err: errObj })
+    } else {
+      logger.info('user api error:', { err: errObj })
+    }
   }
 })
 

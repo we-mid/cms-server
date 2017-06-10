@@ -1,6 +1,7 @@
-require('../src/proc')
+let { init } = require('../src/proc')
 let { User, Order, Product } = require('../src/model')
 
+init('db-uninst')
 unist()
 
 async function unist () {

@@ -6,12 +6,19 @@ let session = require('koa-session')
 let ratelimit = require('koa-ratelimit')
 let RedisStore = require('koa-redis')
 let Redis = require('ioredis')
+let logger = require('./logger')
+let { pickError } = require('../util')
 let { registerApi } = require('./api')
 let { app: { secretKeys, uploadDir } } = require('../config')
 
 let app = new Koa()
 
 app.keys = secretKeys
+
+app.on('error', err => {
+  err = pickError(err)
+  logger.error('koa app error', { err })
+})
 
 app.use(helmet())
 

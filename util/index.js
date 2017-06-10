@@ -38,3 +38,8 @@ function toFieldsArr (obj) {
     return acc
   }, [])
 }
+
+exports.pickError = pickError
+function pickError (err) {
+  return _.pick(err, ['code', 'status', 'message', 'stack'])
+}

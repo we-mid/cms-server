@@ -1,10 +1,9 @@
-require('../src/proc')
+let { init } = require('../src/proc')
 let { User, Order, Product } = require('../src/model')
 let mockData = require('../test/_mockData')
 
-setup().catch(err => {
-  console.error(err.stack)
-})
+init('db-setup')
+setup()
 
 async function setup () {
   await Product.index({ uid: 1 }, { unique: true })
