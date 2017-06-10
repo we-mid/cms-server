@@ -1,34 +1,31 @@
 let { join } = require('path')
 
 // hack: detect whether it is in ava test
-let isTest = process.argv[1] &&
+let isAva = process.argv[1] &&
   process.argv[1].includes('node_modules/ava')
 
+let isTesting = isAva || process.env.NODE_ENV === 'testing'
 let isProduction = process.env.NODE_ENV === 'production'
 
-// process.env.NODE_ENV is deprecated,
-// because it is hard to control
+let envPort = process.env.PORT
 let config = {
-  env: 'development',
-  secretKeys: ['some-secret-keys'],
-  uploadDir: join(__dirname, './upload'),
-  dbName: 'we-admin-dev',
-  mongoPort: 27017,
-  port: 3001
+  env: process.env.NODE_ENV,
+  app: {
+    secretKeys: ['some-secret-keys'],
+    uploadDir: join(__dirname, './upload'),
+    port: envPort || 3001
+  },
+  mongo: {
+    db: 'we-admin-dev'
+  }
 }
 
-if (isTest) {
-  Object.assign(config, {
-    env: 'test',
-    dbName: 'we-admin-test',
-    port: 3003
-  })
+if (isTesting) {
+  config.app.port = envPort || 3003
+  config.mongo.db = 'we-admin-test'
 } else if (isProduction) {
-  Object.assign(config, {
-    env: 'production',
-    dbName: 'we-admin-prod',
-    port: 3005
-  })
+  config.app.port = envPort || 3005
+  config.mongo.db = 'we-admin-prod'
 }
 
 module.exports = config

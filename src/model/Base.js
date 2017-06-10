@@ -14,7 +14,5 @@ let Base = list.reduce((B, fn) => {
 
 module.exports = Base
 
-Base.mongoConfig = {
-  port: process.env.MONGO_PORT,
-  dbName: process.env.MONGO_DBNAME
-}
+let { mongo } = require('../../config')
+Base.mongoConfig = mongo

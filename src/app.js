@@ -1,4 +1,3 @@
-require('./env')
 let Koa = require('koa')
 let mount = require('koa-mount')
 let helmet = require('koa-helmet')
@@ -8,8 +7,7 @@ let ratelimit = require('koa-ratelimit')
 let RedisStore = require('koa-redis')
 let Redis = require('ioredis')
 let { registerApi } = require('./api')
-let { secretKeys, uploadDir } = require('../config')
-require('./schedule')
+let { app: { secretKeys, uploadDir } } = require('../config')
 
 let app = new Koa()
 

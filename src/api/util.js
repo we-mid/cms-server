@@ -1,7 +1,7 @@
 let _ = require('lodash')
 let KoaBody = require('koa-body')
 let fs = require('fs-extra-promise')
-let { uploadDir } = require('../../config')
+let { app: { uploadDir } } = require('../../config')
 
 fs.ensureDirSync(uploadDir)
 

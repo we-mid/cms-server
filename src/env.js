@@ -1,4 +1,4 @@
-let { mongoPort, dbName } = require('../config')
+let { NODE_ENV } = process.env
+process.env.NODE_ENV = NODE_ENV || 'development'
 
-process.env.MONGO_PORT = mongoPort
-process.env.MONGO_DBNAME = dbName
+module.exports = process.env

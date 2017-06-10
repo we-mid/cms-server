@@ -2,12 +2,14 @@
   "name": "cms-server",
   "version": "0.0.1",
   "description": "Server-side of CMS framework.",
-  "main": "src/",
   "license": "MIT",
   "scripts": {
     "test": "ava test --verbose --fail-fast",
-    "dev": "nodemon .",
-    "start": "node ."
+    "dev:server": "nodemon src/server.js",
+    "dev:schedule": "nodemon src/schedule.js",
+    "dev": "run-p dev:server dev:schedule",
+    "stop": "pm2 stop ecosystem.config.js",
+    "start": "pm2 reload ecosystem.config.js"
   },
   "dependencies": {
     "decamelize": "^1.2.0",
@@ -23,7 +25,7 @@
     "koa-session": "^5.0.0",
     "koa-static": "^3.0.0",
     "lodash": "^4.17.4",
-    "mongo-model-2": "0.0.2",
+    "mongo-model-2": "0.0.3",
     "mongodb": "^2.2.25",
     "node-schedule": "^1.2.3",
     "pluralize": "^5.0.0",
@@ -35,6 +37,7 @@
   "devDependencies": {
     "ava": "^0.19.1",
     "nodemon": "^1.11.0",
+    "npm-run-all": "^4.0.2",
     "sinon": "^2.3.2",
     "supertest": "^3.0.0"
   }
