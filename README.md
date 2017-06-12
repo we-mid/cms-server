@@ -1,4 +1,4 @@
-# we-admin-server
+# cns-server
 
 - mongodb
 - redis
@@ -7,7 +7,7 @@
 - koa-2
 - ava
 
-### we-admin-ui
+### cms-admin
 
 - vue-2
 - nuxt
@@ -24,6 +24,8 @@
 - form validate
 - redis cache
 - transaction
+- pm2
+- cursor streaming
 
 ### Notes
 
@@ -31,3 +33,20 @@
 - make sure koa-body@2 is installed against koa@2
 - process.env.NODE_ENV is hard to control, we use config.env instead
 - for better readability, we don't use standard RESTful api
+
+### Usage
+
+```sh
+node tool/db-uninst
+```
+
+```sh
+node tool/db-setup
+```
+
+```sh
+npm start
+# equivalent to
+node tool/db-ensure
+pm2 reload ecosystem.config.js
+```

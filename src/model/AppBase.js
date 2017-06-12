@@ -66,11 +66,12 @@ module.exports = B => {
     }
   }
 
-  let bSchemaCopy = _.clone(B.schema)
-  C.schema = _.assign(bSchemaCopy, {
+  C.schema = _.assign({}, B.schema, {
     uid: { type: String, default: C.genDocUid }
   })
+  C.indexes = _.assign({}, B.indexes, {
+    uid_1: [{ uid: 1 }, { unique: true }]
+  })
   C.secretFields = []
-
   return C
 }

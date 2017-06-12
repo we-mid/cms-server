@@ -15,12 +15,16 @@ apiRouter.use(async (ctx, next) => {
   try {
     await next()
   } catch (err) {
-    let { code, status, message: error } = err
+    let { code, name, status, message } = err
+    if (name === 'ValidationError') {
+      status = 400
+    }
     status = status || 500
+
     ctx.body = {
       code,
       status,
-      error
+      error: message
     }
     ctx.status = status
 

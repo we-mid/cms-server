@@ -14,14 +14,14 @@ let RoleProp = {
   enum: [CLIENT, ADMIN, PROVIDER] // todo
 }
 
-let bSchemaCopy = _.clone(B.schema)
-C.schema = _.assign(bSchemaCopy, {
+C.schema = _.assign({}, B.schema, {
   name: { type: String },
   roles: { type: Array, element: RoleProp },
   ad: { type: String, optional: true },
   account: { type: String, optional: true },
   password: { type: String, optional: true }
 })
+
 C.secretFields = ['password']
 
 module.exports = C

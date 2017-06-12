@@ -8,8 +8,7 @@ let C = class Product extends B {
 let priceProp = { type: Number, range: [0.5, 99.5], step: 0.5 }
 C.priceProp = priceProp
 
-let bSchemaCopy = _.clone(B.schema)
-C.schema = _.assign(bSchemaCopy, {
+C.schema = _.assign({}, B.schema, {
   price: priceProp,
   name: { type: String, range: [2, 16] },
   category: { type: String },
