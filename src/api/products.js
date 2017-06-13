@@ -1,5 +1,5 @@
 let { Product } = require('../model')
-let { koaJson } = require('./util')
+let { koaJson, strToRegex } = require('./util')
 let _ = require('lodash')
 
 let R = Product.getResName()
@@ -33,10 +33,24 @@ function registerResource (router) {
 
   // dont forget to `parseInt` the number params
   router.get(`/a/${R}/list`, async ctx => {
+    let filter = {}
+    let search = ctx.query.search || {}
+    if (search.category != null) {
+      filter.category = search.category
+    }
+    if (search.price != null) {
+      filter.price = +search.price
+    }
+    if (search.keyword != null) {
+      filter.$or = ['uid', 'name', 'description'].map(k => {
+        return { [k]: strToRegex(search.keyword) }
+      })
+    }
+
     let { total, docs } = await Product.list({
       pagin: ctx.state.pagin,
       fields: listFields,
-      filter: {}
+      filter
     })
     ctx.body = { total, docs }
   })

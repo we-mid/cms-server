@@ -1,4 +1,5 @@
 let Koa = require('koa')
+let KoaQs = require('koa-qs')
 let mount = require('koa-mount')
 let helmet = require('koa-helmet')
 let serve = require('koa-static')
@@ -12,6 +13,8 @@ let { registerApi } = require('./api')
 let { app: { secretKeys, uploadDir } } = require('../config')
 
 let app = new Koa()
+
+KoaQs(app)
 
 app.keys = secretKeys
 

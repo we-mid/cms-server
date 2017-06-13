@@ -1,6 +1,7 @@
 let _ = require('lodash')
 let KoaBody = require('koa-body')
 let fs = require('fs-extra-promise')
+let escStrRegex = require('escape-string-regexp')
 let { app: { uploadDir } } = require('../../config')
 
 fs.ensureDirSync(uploadDir)
@@ -12,22 +13,15 @@ const koaUpload = KoaBody({
   formidable: { uploadDir }
 })
 
-exports.validate = validate
-exports.koaJson = koaJson
 exports.koaUpload = koaUpload
-exports.parsePagination = parsePagination
 
-function validate (fn) {
-  return async (ctx, next) => {
-    try {
-      fn(ctx)
-    } catch (err) {
-      ctx.throw(err.status || 400, err)
-    }
-    await next()
-  }
+exports.strToRegex = strToRegex
+function strToRegex (str) {
+  str = escStrRegex(str)
+  return new RegExp(str)
 }
 
+exports.koaJson = koaJson
 async function koaJson (ctx, next) {
   const nx = async () => {
     let { body } = ctx.request
@@ -45,23 +39,6 @@ async function koaJson (ctx, next) {
     await next()
   }
   await koaBody(ctx, nx)
-}
-
-function parsePagination (ctx) {
-  let { page, skip, limit, sort } = ctx.query
-  limit = parseInt(limit) || 10
-  if ('skip' in ctx.query) {
-    skip = parseInt(skip) || 0
-  } else {
-    page = parseInt(page) || 1
-    skip = limit * (page - 1)
-  }
-  if (sort) {
-    sort = { _id: +sort }
-  } else {
-    sort = { _id: -1 }
-  }
-  return { skip, limit, sort }
 }
 
 exports.koaPagin = koaPagin
