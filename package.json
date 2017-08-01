@@ -20,6 +20,7 @@
     "ioredis": "^3.0.0",
     "koa": "^2.2.0",
     "koa-body": "^2.0.0",
+    "koa-captcha-2": "^1.0.0",
     "koa-helmet": "^3.1.0",
     "koa-mount": "^3.0.0",
     "koa-qs": "^2.0.0",

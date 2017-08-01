@@ -1,4 +1,5 @@
 let Router = require('koa-router')
+let { drawCaptcha, verifyCaptcha } = require('koa-captcha-2')
 let { basename } = require('path')
 let { koaJson, koaUpload, koaPagin } = require('./util')
 let { User, Order, Product } = require('../model')
@@ -52,7 +53,12 @@ apiRouter.options('*', async (ctx, next) => {
   await next()
 })
 
+apiRouter.get('/captcha', drawCaptcha)
+
 apiRouter.post('/ap/login', koaJson, async ctx => {
+  if (!verifyCaptcha(ctx)) {
+    ctx.throw(400, '验证码不正确')
+  }
   let { account, password } = ctx.request.body
   logger.info('用户尝试登录', { account })
   if (!account) ctx.throw(400, '账号不能为空')
