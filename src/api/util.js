@@ -2,6 +2,7 @@ let _ = require('lodash')
 let KoaBody = require('koa-body')
 let fs = require('fs-extra-promise')
 let escStrRegex = require('escape-string-regexp')
+let sanitize = require('mongo-sanitize')
 let { app: { uploadDir } } = require('../../config')
 
 fs.ensureDirSync(uploadDir)
@@ -25,6 +26,15 @@ exports.koaJson = koaJson
 async function koaJson (ctx, next) {
   const nx = async () => {
     let { body } = ctx.request
+    body = sanitize(body)
+
+    // fixme: 注意这里 不强制校验application/json 会受到csrf攻击
+    // https://blog.fritx.me/?weekly/190126
+    // [0124] csrf-demo 深度模拟实验报告
+    // [0122] csrf 与 json
+    // https://blog.fritx.me/?weekly/190112
+    // [0107] koa-body 防范csrf 强制校验 content-type json
+    // [0107] 脆弱的koa-body json csrf 研究
     if (body && _.isString(body)) {
       try {
         body = JSON.parse(body)

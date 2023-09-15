@@ -1,6 +1,7 @@
 let Router = require('koa-router')
 let { drawCaptcha, verifyCaptcha } = require('koa-captcha-2')
 let { basename } = require('path')
+let sanitize = require('mongo-sanitize')
 let { koaJson, koaUpload, koaPagin } = require('./util')
 let { User, Order, Product } = require('../model')
 let { pickError } = require('../../util')
@@ -36,6 +37,14 @@ apiRouter.use(async (ctx, next) => {
       logger.info('user api error:', { err: errObj })
     }
   }
+})
+
+// web security sanitize
+apiRouter.use(async (ctx, next) => {
+  ctx.query = sanitize(ctx.query)
+  ctx.request.body = sanitize(ctx.request.body)
+  // 注意 koaJson中 由于二次赋值了 因此需要再次sanitize
+  await next()
 })
 
 // api cors
